@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.employee.AddEmployee">
+
+    <TextView
+        android:id="@+id/text_name"
+        android:layout_width="216dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="72dp"
+        android:hint="@string/name"
+        android:textAlignment="viewStart"
+        android:textColor="@color/black"
+        android:textColorHint="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.205"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+            android:id="@+id/editTextName"
+            android:layout_width="311dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="28dp"
+            android:hint="Veuillez ajouter un nom"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_name" />
+
+        <TextView
+            android:id="@+id/text_firstname"
+            android:layout_width="216dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="52dp"
+            android:hint="@string/firstname"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textColorHint="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.205"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextName" />
+
+        <EditText
+            android:id="@+id/editTextFirstname"
+            android:layout_width="311dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="12dp"
+            android:hint="Veuillez ajouter un prénom"
+            android:textColor="#000000"
+            android:textColorHint="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.31"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_firstname" />
+
+        <TextView
+            android:id="@+id/text_phone"
+            android:layout_width="216dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="24dp"
+            android:hint="@string/phone"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textColorHint="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.158"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextFirstname" />
+
+        <EditText
+            android:id="@+id/editTextPhone"
+            android:layout_width="327dp"
+            android:layout_height="66dp"
+            android:ems="10"
+            android:hint="Veuillez saisir un numéro de téléphone"
+            android:inputType="phone"
+            android:textColorHint="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.289"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_phone" />
+
+        <TextView
+            android:id="@+id/text_email"
+            android:layout_width="216dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="16dp"
+            android:hint="@string/email"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textColorHint="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.123"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextPhone"
+            tools:ignore="MissingConstraints" />
+
+        <EditText
+            android:id="@+id/editTextTextEmailAddress"
+            android:layout_width="309dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="8dp"
+            android:ems="10"
+            android:hint="Veuilez saisir un email"
+            android:inputType="textEmailAddress"
+            android:textColorHint="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.235"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_email" />
+
+        <TextView
+            android:id="@+id/text_spinner_service"
+            android:layout_width="216dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="20dp"
+            android:hint="@string/department"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textColorHint="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.158"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextTextEmailAddress" />
+
+        <Spinner
+            android:id="@+id/spinnerService"
+            android:layout_width="374dp"
+            android:layout_height="61dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.567"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_spinner_service" />
+
+        <TextView
+            android:id="@+id/text_spinner_site"
+            android:layout_width="216dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="4dp"
+            android:hint="@string/localisation"
+            android:textAlignment="viewStart"
+            android:textColor="@color/black"
+            android:textColorHint="#000000"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.169"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerService" />
+
+        <Spinner
+            android:id="@+id/spinnerSite"
+            android:layout_width="374dp"
+            android:layout_height="53dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.567"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_spinner_site" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/buttonSendForm"
+            android:layout_width="255dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="56dp"
+            android:layout_marginBottom="55dp"
+            android:layout_marginLeft="55dp"
+            android:src="@drawable/baseline_add_24"
+            android:contentDescription="sendForm"
+            android:textColorHint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.886"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerSite"
+            app:layout_constraintVertical_bias="0.0" />
+
+</LinearLayout>
+</ScrollView>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.employee.EmployeeDetail">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/materialToolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#673AB7"
+        app:title="Employee Details"
+        app:titleTextColor="@color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/materialToolbar2"
+        android:layout_marginTop="2dp"
+        android:orientation="vertical">
+
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+
+            <TableRow>
+
+                <TextView
+                    android:text="@string/name"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/nameDetail"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:padding="5dp"
+                    android:text="Daubrive"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:enabled="false"
+                    android:focusable="true"
+                    />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:text="@string/firstname"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/firstnameDetail"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:padding="5dp"
+                    android:text="Paul"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:enabled="false"
+                    android:focusable="true"/>
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:text="@string/phone"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/phoneDetail"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:padding="5dp"
+                    android:text="0625944475"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:enabled="false"
+                    android:focusable="true" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:text="@string/email"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/emailDetail"
+                    android:layout_marginStart="5dp"
+                    android:padding="5dp"
+                    android:text="pauldaubrive@gmail.com"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:enabled="false"
+                    android:focusable="true"
+                    />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:text="service"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/employeeDepartmentDetail"
+                    android:layout_marginStart="5dp"
+                    android:padding="5dp"
+                    android:text="Direction"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:enabled="false"
+                    android:focusable="true"
+                    />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:text="site"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold" />
+
+                <Spinner
+                    android:id="@+id/employeeSiteDetail"
+                    android:layout_marginStart="5dp"
+                    android:padding="5dp"
+                    android:text="Paris"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:enabled="false"
+                    android:focusable="true"/>
+            </TableRow>
+        </TableLayout>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/employee_button_edit"
+        android:layout_width="68dp"
+        android:layout_height="65dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="101dp"
+        android:drawableEnd="@drawable/baseline_edit_24"
+        android:contentDescription="edit"/>
+
+    <Button
+        android:id="@+id/employee_button_delete"
+        android:layout_width="66dp"
+        android:layout_height="62dp"
+        android:layout_alignBottom="@+id/materialToolbar2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="23dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="15dp"
+        android:drawableEnd="@drawable/baseline_delete_24"
+        android:contentDescription="delete"/>
+
+    <Button
+        android:id="@+id/employee_save_update"
+        android:layout_width="257dp"
+        android:layout_height="62dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="485dp"
+        android:layout_marginEnd="79dp"
+        android:text="Sauvegarder" />
+</RelativeLayout>

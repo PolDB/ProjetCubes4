@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.site.SiteDetail">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/materialToolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#673AB7"
+        app:title="Service Details"
+        app:titleTextColor="@color/white"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/materialToolbar2"
+        android:layout_marginTop="2dp"
+        android:orientation="vertical">
+
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            tools:ignore="UselessLeaf">
+
+            <TableRow>
+
+                <TextView
+                    android:text="@string/menu_site"
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    android:textStyle="bold"
+                    tools:ignore="SpUsage" />
+
+                <EditText
+                    android:id="@+id/siteDetail"
+                    android:layout_marginStart="5dp"
+                    android:padding="5dp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="25dp"
+                    tools:ignore="SpUsage"
+                    android:enabled="false"
+                    android:focusable="true"/>
+            </TableRow>
+        </TableLayout>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/site_button_edit"
+        android:layout_width="68dp"
+        android:layout_height="65dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="22dp"
+        android:layout_marginEnd="101dp"
+        android:drawableEnd="@drawable/baseline_edit_24"
+        android:contentDescription="edit"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/site_button_delete"
+        android:layout_width="66dp"
+        android:layout_height="62dp"
+        android:layout_alignBottom="@+id/materialToolbar2"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="23dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="15dp"
+        android:drawableEnd="@drawable/baseline_delete_24"
+        android:contentDescription="delete"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/site_save_update"
+        android:layout_width="257dp"
+        android:layout_height="62dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="485dp"
+        android:layout_marginEnd="79dp"
+        android:text="Sauvegarder"
+        tools:ignore="HardcodedText" />
+</RelativeLayout>

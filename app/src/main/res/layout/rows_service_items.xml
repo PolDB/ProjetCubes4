@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardUseCompatPadding="true"
+    app:cardElevation="7dp"
+    android:backgroundTint="#3F51B5">
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="97dp"
+        tools:ignore="ExtraText">
+
+        <TextView
+            android:id="@+id/department_name"
+            android:layout_width="245dp"
+            android:layout_height="42dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="19dp"
+            android:layout_marginTop="19dp"
+            android:layout_marginEnd="13dp"
+
+            android:layout_marginBottom="36dp"
+            android:layout_toEndOf="@+id/service_image"
+            android:text="Service name"
+            android:textAlignment="viewStart"
+            android:textColor="@color/white"
+            android:textSize="30dp" />
+
+        <ImageView
+            android:id="@+id/service_image"
+            android:layout_width="47dp"
+            android:layout_height="42dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="35dp"
+            tools:srcCompat="@drawable/baseline_home_repair_service_24" />
+
+
+
+    </RelativeLayout>
+
+
+
+</androidx.cardview.widget.CardView>
