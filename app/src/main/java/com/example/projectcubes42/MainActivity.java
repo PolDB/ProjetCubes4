@@ -2,39 +2,22 @@ package com.example.projectcubes42;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.example.projectcubes42.ui.employee.FragmentEmployee;
 
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-        Button buttonSearch = findViewById(R.id.buttonSearch);
-        Button buttonAdmin =  findViewById(R.id.buttonAdmin);
-        EditText name = findViewById(R.id.editTextName);
 
-        buttonAdmin.setOnClickListener(View -> {
-            Intent intent = new Intent(MainActivity.this, Admin_activity.class);
-            startActivity(intent);
-        });
+        // Redirige directement vers DrawerActivity
+        Intent intent = new Intent(MainActivity.this, Drawer_activity.class);
+        startActivity(intent);
 
-        buttonSearch.setOnClickListener(View ->{
-            Intent intent = new Intent(MainActivity.this, Drawer_activity.class);
-            startActivity(intent);
-        });
+        // Terminez MainActivity pour ne pas revenir à cette activité en appuyant sur "Retour"
+        finish();
     }
 }

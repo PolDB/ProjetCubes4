@@ -78,7 +78,7 @@
                     android:textSize="25dp"
                     android:textStyle="bold" />
 
-                <TextView
+                <EditText
                     android:id="@+id/phoneDetail"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"

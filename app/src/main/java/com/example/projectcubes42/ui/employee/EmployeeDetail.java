@@ -194,6 +194,8 @@ public class EmployeeDetail extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     Toast.makeText(EmployeeDetail.this, "Employé mis à jour avec succès !", Toast.LENGTH_SHORT).show();
                     enableFields(false);
+                    Log.d("UPDATE_EMPLOYEE", "Mise à jour réussie, recharge les données...");
+                    getEmployeeById(employee.getId());
                 } else {
                     Toast.makeText(EmployeeDetail.this, "Erreur lors de la mise à jour.", Toast.LENGTH_SHORT).show();
                 }
