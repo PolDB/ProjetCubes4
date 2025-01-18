@@ -1,23 +1,28 @@
 package com.example.projectcubes42;
 
-import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.projectcubes42.ui.employee.FragmentEmployee;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import com.example.projectcubes42.ui.employee.FragmentEmployeeVisitor;
 
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        // Redirige directement vers DrawerActivity
-        Intent intent = new Intent(MainActivity.this, Drawer_activity.class);
-        startActivity(intent);
+        // Charger le fragment au démarrage
+        if (savedInstanceState == null) {
+            loadFragment(new FragmentEmployeeVisitor());
+        }
+    }
 
-        // Terminez MainActivity pour ne pas revenir à cette activité en appuyant sur "Retour"
-        finish();
+    private void loadFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
     }
 }

@@ -47,4 +47,7 @@
     <string name="site_name">Site name</string>
     <string name="todo">TODO</string>
     <string name="sendform">sendForm</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="deconnexion">Deconnexion</string>
+    <string name="image_profile">image profile</string>
 </resources>

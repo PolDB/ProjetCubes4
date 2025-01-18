@@ -4,10 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import androidx.biometric.BiometricManager;
-
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
@@ -24,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.projectcubes42.Drawer_activity;
 import com.example.projectcubes42.LoginActivity;
 import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Department;
@@ -31,61 +28,44 @@ import com.example.projectcubes42.data.model.Site;
 import com.example.projectcubes42.data.network.ApiClient;
 import com.example.projectcubes42.data.network.ApiService;
 import com.example.projectcubes42.data.model.Employee;
-import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FragmentEmployee extends Fragment {
+public class FragmentEmployeeVisitor extends Fragment {
 
     private RecyclerView recyclerView;
     private EmployeeAdapter adapter;
     private ApiService employeeApi;
-    private Button addEmployeeButton, openBottomSheetButton, openAlertDialogSite, searchButton;
-    private List<Employee> employeeList = new ArrayList<>(); // Liste complète des employés
-    private List<Employee> filteredList = new ArrayList<>(); // Liste filtrée
+    private Button openBottomSheetButton, openAlertDialogSite, searchButton;
+    private List<Employee> employeeList = new ArrayList<>();
+    private List<Employee> filteredList = new ArrayList<>();
     private ImageView imageView;
 
     @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflater le layout
-        View root = inflater.inflate(R.layout.fragment_employee, container, false);
+        View root = inflater.inflate(R.layout.fragment_employee_visitor, container, false);
 
         recyclerView = root.findViewById(R.id.contactRecyclerView);
-        addEmployeeButton = root.findViewById(R.id.button_add_employee);
-        openBottomSheetButton = root.findViewById(R.id.button_sort_department);
-        openAlertDialogSite = root.findViewById(R.id.button_sort_site);
+        openBottomSheetButton = root.findViewById(R.id.button_sort_department_visitor);
+        openAlertDialogSite = root.findViewById(R.id.button_sort_site_visitor);
+        searchButton = root.findViewById(R.id.button_search_employee_visitor);
+        imageView = root.findViewById(R.id.imageViewVisitor);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        searchButton = root.findViewById(R.id.button_search_employee);
 
-
-
-
-        // Bouton pour ajouter un employé
-        addEmployeeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), AddEmployee.class);
-            startActivity(intent);
-        });
-
-        openBottomSheetButton.setOnClickListener(v -> {
-            showFilterDialogDepartment(); // Appel de la méthode pour afficher l'AlertDialog
-        });
-        openAlertDialogSite.setOnClickListener(v -> {
-            showFilterDialogSite();
-        });
-
+        openBottomSheetButton.setOnClickListener(v -> showFilterDialogDepartment());
+        openAlertDialogSite.setOnClickListener(v -> showFilterDialogSite());
         searchButton.setOnClickListener(v -> showSearchDialog());
+        imageView.setOnClickListener(v -> {  Intent intent = new Intent(requireContext(), LoginActivity.class);
+            startActivity(intent);});
 
-        // Initialiser Retrofit et l'interface API
         employeeApi = ApiClient.getClient().create(ApiService.class);
-        // Charger les employés
         fetchEmployees();
 
         return root;
@@ -94,68 +74,26 @@ public class FragmentEmployee extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Rafraîchir les employés chaque fois que le fragment devient visible
         fetchEmployees();
-
-    }
-    private void checkUserRole() {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
-        String userRole = sharedPreferences.getString("user_role", "visitor");
-
-        Log.d("CHECK_USER_ROLE", "Rôle récupéré : " + userRole);
-
-        if (!userRole.equals("admin")) {
-            addEmployeeButton.setVisibility(View.GONE);
-            Log.d("CHECK_USER_ROLE", "Utilisateur non admin, bouton caché");
-        } else {
-            addEmployeeButton.setVisibility(View.VISIBLE);
-            openBottomSheetButton.setVisibility(View.VISIBLE);
-            openAlertDialogSite.setVisibility(View.VISIBLE);
-            Log.d("CHECK_USER_ROLE", "Utilisateur admin, boutons affichés");
-        }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && resultCode == getActivity().RESULT_OK && data != null) {
-            ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            if (results.contains("admin access")) { // Phrase secrète
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-            }
-        }
-    }
+
     private void fetchEmployees() {
         Call<List<Employee>> call = employeeApi.getAllEmployees();
         call.enqueue(new Callback<List<Employee>>() {
             @Override
             public void onResponse(Call<List<Employee>> call, Response<List<Employee>> response) {
-                if (!response.isSuccessful()) {
-                    Log.e("API_ERROR", "Code d'erreur : " + response.code());
-                    Toast.makeText(requireContext(), "Échec du chargement des données", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                if (response.body() == null || response.body().isEmpty()) {
-                    Log.e("API_ERROR", "Le corps de la réponse est nul ou vide");
+                if (!response.isSuccessful() || response.body() == null) {
+                    Log.e("API_ERROR", "Échec du chargement des employés");
                     Toast.makeText(requireContext(), "Aucun employé trouvé", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                Log.d("API_SUCCESS", "Données récupérées avec succès : " + response.body().size());
-                Log.d("EMPLOYEE_LIST", "Employés chargés : " + employeeList.size());
-                for (Employee employee : employeeList) {
-                    Log.d("EMPLOYEE", "Nom : " + employee.getName() + ", Département ID : " + employee.idDepartment());
-                }
-                // Mettre à jour les listes avec les données récupérées
                 employeeList.clear();
                 employeeList.addAll(response.body());
-
-                // Afficher tous les employés par défaut
                 filteredList.clear();
                 filteredList.addAll(employeeList);
 
-                // Initialiser et configurer l'adaptateur
                 adapter = new EmployeeAdapter(requireContext(), filteredList);
                 recyclerView.setAdapter(adapter);
             }
@@ -167,6 +105,7 @@ public class FragmentEmployee extends Fragment {
             }
         });
     }
+
 
     private void showFilterDialogDepartment() {
         // Charger la liste des départements via l'API
@@ -351,6 +290,6 @@ public class FragmentEmployee extends Fragment {
             adapter.updateData(filteredList);
         }
     }
-
-
 }
+
+

@@ -52,8 +52,11 @@ dependencies {
     implementation(libs.annotation)
     implementation(libs.cronet.embedded)
     implementation(libs.espresso.intents)
+    implementation(libs.biometric)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation (libs.spring.security.crypto)
+
 
 }

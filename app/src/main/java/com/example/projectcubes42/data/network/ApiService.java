@@ -1,7 +1,9 @@
 package com.example.projectcubes42.data.network;
 
+import com.example.projectcubes42.data.model.AuthResponse;
 import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.model.Department;
+import com.example.projectcubes42.data.model.LoginRequest;
 import com.example.projectcubes42.data.model.Site;
 
 import retrofit2.Call;
@@ -60,6 +62,9 @@ public interface ApiService {
 
     @DELETE("api/site/{id}")
     Call<Void> deleteSite(@Path("id") Long id);
+
+    @POST("auth/login")
+    Call<AuthResponse> login(@Body LoginRequest request);
 
 
 }

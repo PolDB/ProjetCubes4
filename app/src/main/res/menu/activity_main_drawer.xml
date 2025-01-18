@@ -7,7 +7,8 @@
         <item
             android:id="@+id/nav_homeview"
             android:icon="@drawable/baseline_home_24"
-            android:title="@string/menu_homeview" />
+            android:title="@string/menu_homeview"
+            android:visible="false"/>
 
         <item
             android:id="@+id/nav_employee"
@@ -16,10 +17,17 @@
         <item
             android:id="@+id/nav_service"
             android:icon="@drawable/baseline_home_repair_service_24"
-            android:title="@string/menu_service" />
+            android:title="@string/menu_service"
+            android:visible="true"/>
         <item
             android:id="@+id/nav_site"
             android:icon="@drawable/baseline_location_pin_24"
-            android:title="@string/menu_site" />
+            android:title="@string/menu_site"
+            android:visible="true"/>
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/baseline_location_pin_24"
+            android:title="@string/deconnexion"
+            android:visible="true"/>
     </group>
 </menu>
