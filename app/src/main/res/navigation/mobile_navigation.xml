@@ -47,4 +47,6 @@
         android:label="Admin View : Site"
         android:name="com.example.projectcubes42.ui.site.FragmentSite"
         tools:layout="@layout/fragment_site" />
+
+
 </navigation>

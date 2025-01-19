@@ -6,74 +6,82 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Site;
-import com.example.projectcubes42.data.network.ApiService;
-import com.example.projectcubes42.data.network.ApiClient;
-
 
 import java.util.List;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class FragmentSite extends Fragment {
 
     private RecyclerView recyclerView;
     private SiteAdapter adapter;
-    private ApiService serviceApi;
     private Button addEmployeeButton;
 
+    // ViewModel
+    private SiteViewModel siteViewModel;
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflater le layout
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+
         View root = inflater.inflate(R.layout.fragment_site, container, false);
 
+        // Récupération des références UI
         recyclerView = root.findViewById(R.id.contactRecyclerView);
         addEmployeeButton = root.findViewById(R.id.button_add_site);
+
+        // Configuration de la RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        // Créer (ou récupérer) le ViewModel
+        siteViewModel = new ViewModelProvider(requireActivity()).get(SiteViewModel.class);
+
+        // Observer la liste des sites
+        siteViewModel.getSites().observe(getViewLifecycleOwner(), siteList -> {
+            if (siteList != null) {
+                updateRecyclerView(siteList);
+            }
+        });
+
+        // Observer les messages (Toast)
+        siteViewModel.getToastMessage().observe(getViewLifecycleOwner(), message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Bouton pour ajouter un Site
         addEmployeeButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), AddSite.class);
-        startActivity(intent);
-    });
-
-        // Initialiser Retrofit et l'interface API
-        serviceApi = ApiClient.getClient().create(ApiService.class);
-
-        fetchSites();
+            startActivity(intent);
+        });
 
         return root;
     }
+
     @Override
     public void onResume() {
         super.onResume();
-        // Rafraîchir les employés chaque fois que le fragment devient visible
-        fetchSites();
+        // Recharger la liste des sites lorsqu’on revient sur le fragment
+        siteViewModel.loadSites();
     }
 
-
-    private void fetchSites() {
-        Call<List<Site>> call = serviceApi.getAllSites();
-        call.enqueue(new Callback<List<Site>>() {
-            @Override
-            public void onResponse(Call<List<Site>> call, Response<List<Site>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    adapter = new SiteAdapter(response.body());
-                    recyclerView.setAdapter(adapter);
-                } else {
-                    Toast.makeText(requireContext(), "Échec du chargement des données", Toast.LENGTH_SHORT).show();                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Site>> call, Throwable t) {
-                Toast.makeText(requireContext(), "Erreur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }}
+    // Méthode pour initialiser ou mettre à jour l’adaptateur
+    private void updateRecyclerView(List<Site> siteList) {
+        if (adapter == null) {
+            adapter = new SiteAdapter(siteList);
+            recyclerView.setAdapter(adapter);
+        } else {
+            // Si l'adaptateur existe déjà, on peut mettre à jour sa liste
+            adapter.updateData(siteList);
+        }
+    }
+}

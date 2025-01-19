@@ -6,75 +6,86 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Department;
-import com.example.projectcubes42.data.network.ApiService;
-import com.example.projectcubes42.data.network.ApiClient;
 
 import java.util.List;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class FragmentDepartment extends Fragment {
 
     private RecyclerView recyclerView;
     private DepartmentAdapter adapter;
-    private ApiService serviceApi;
     private Button addEmployeeButton;
 
+    // Référence à notre ViewModel
+    private DepartmentViewModel departmentViewModel;
+
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflater le layout
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+
         View root = inflater.inflate(R.layout.fragment_service, container, false);
 
         recyclerView = root.findViewById(R.id.contactRecyclerView);
         addEmployeeButton = root.findViewById(R.id.button_add_service);
+
+        // Configuration de la RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
+        // Instanciation (ou récupération) du ViewModel
+        departmentViewModel = new ViewModelProvider(requireActivity())
+                .get(DepartmentViewModel.class);
+
+        // Observer la liste des départements pour mettre à jour l'adaptateur
+        departmentViewModel.getDepartments().observe(getViewLifecycleOwner(), departments -> {
+            if (departments != null) {
+                updateRecyclerView(departments);
+            }
+        });
+
+        // Observer les messages d'erreur pour afficher un Toast
+        departmentViewModel.getToastMessage().observe(getViewLifecycleOwner(), message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Charger les départements
+        departmentViewModel.loadDepartments();
+
+        // Bouton "ajouter un département"
         addEmployeeButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), AddDepartment.class);
-        startActivity(intent);
-    });
-
-
-        // Initialiser Retrofit et l'interface API
-        serviceApi = ApiClient.getClient().create(ApiService.class);
-
-        fetchServices();
+            startActivity(intent);
+        });
 
         return root;
     }
+
+    // En revenant sur le fragment
     @Override
     public void onResume() {
         super.onResume();
-        // Rafraîchir les employés chaque fois que le fragment devient visible
-        fetchServices();
+        // Recharger si nécessaire
+        departmentViewModel.loadDepartments();
     }
 
-
-    private void fetchServices() {
-        Call<List<Department>> call = serviceApi.getAllDepartments();
-        call.enqueue(new Callback<List<Department>>() {
-            @Override
-            public void onResponse(Call<List<Department>> call, Response<List<Department>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    adapter = new DepartmentAdapter(response.body());
-                    recyclerView.setAdapter(adapter);
-                } else {
-                    Toast.makeText(requireContext(), "Échec du chargement des données", Toast.LENGTH_SHORT).show();                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Department>> call, Throwable t) {
-                Toast.makeText(requireContext(), "Erreur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }}
+    // Méthode utilitaire pour mettre à jour le RecyclerView
+    private void updateRecyclerView(List<Department> departmentList) {
+        if (adapter == null) {
+            adapter = new DepartmentAdapter(departmentList);
+            recyclerView.setAdapter(adapter);
+        } else {
+            // Si l'adaptateur existe déjà, on peut mettre à jour ses données
+            adapter.updateData(departmentList);
+        }
+    }
+}

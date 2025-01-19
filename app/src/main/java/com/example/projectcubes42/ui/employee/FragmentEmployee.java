@@ -4,10 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
-
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.util.Log;
@@ -19,8 +18,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,45 +27,60 @@ import com.example.projectcubes42.LoginActivity;
 import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Department;
 import com.example.projectcubes42.data.model.Site;
-import com.example.projectcubes42.data.network.ApiClient;
-import com.example.projectcubes42.data.network.ApiService;
 import com.example.projectcubes42.data.model.Employee;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class FragmentEmployee extends Fragment {
 
     private RecyclerView recyclerView;
     private EmployeeAdapter adapter;
-    private ApiService employeeApi;
+
+    // Boutons et éléments UI
     private Button addEmployeeButton, openBottomSheetButton, openAlertDialogSite, searchButton;
-    private List<Employee> employeeList = new ArrayList<>(); // Liste complète des employés
-    private List<Employee> filteredList = new ArrayList<>(); // Liste filtrée
-    private ImageView imageView;
+    private ImageView imageView; // exemple si besoin d'image
+
+    // Référence au ViewModel
+    private EmployeeViewModel employeeViewModel;
 
     @SuppressLint("MissingInflatedId")
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflater le layout
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
         View root = inflater.inflate(R.layout.fragment_employee, container, false);
 
-        recyclerView = root.findViewById(R.id.contactRecyclerView);
-        addEmployeeButton = root.findViewById(R.id.button_add_employee);
-        openBottomSheetButton = root.findViewById(R.id.button_sort_department);
-        openAlertDialogSite = root.findViewById(R.id.button_sort_site);
+        // Initialise les vues
+        recyclerView           = root.findViewById(R.id.contactRecyclerView);
+        addEmployeeButton      = root.findViewById(R.id.button_add_employee);
+        openBottomSheetButton  = root.findViewById(R.id.button_sort_department);
+        openAlertDialogSite    = root.findViewById(R.id.button_sort_site);
+        searchButton           = root.findViewById(R.id.button_search_employee);
+        // imageView = root.findViewById(R.id.votreImageView); // Si vous en avez besoin
+
+        // Configuration de la RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        searchButton = root.findViewById(R.id.button_search_employee);
+        adapter = new EmployeeAdapter(requireContext(), new ArrayList<>());
+        recyclerView.setAdapter(adapter);
 
+        // Instancier (ou récupérer) le ViewModel
+        employeeViewModel = new ViewModelProvider(requireActivity()).get(EmployeeViewModel.class);
 
+        // Observer la liste filtrée pour mettre à jour l'adaptateur
+        employeeViewModel.getFilteredEmployees().observe(getViewLifecycleOwner(), filteredList -> {
+            if (filteredList != null) {
+                adapter.updateData(filteredList);
+            }
+        });
 
+        // Charger la liste des employés via le ViewModel
+        employeeViewModel.loadEmployees();
+
+        // Vérifier le rôle utilisateur pour afficher / cacher les boutons (admin/visiteur)
+        checkUserRole();
 
         // Bouton pour ajouter un employé
         addEmployeeButton.setOnClickListener(v -> {
@@ -74,19 +88,14 @@ public class FragmentEmployee extends Fragment {
             startActivity(intent);
         });
 
-        openBottomSheetButton.setOnClickListener(v -> {
-            showFilterDialogDepartment(); // Appel de la méthode pour afficher l'AlertDialog
-        });
-        openAlertDialogSite.setOnClickListener(v -> {
-            showFilterDialogSite();
-        });
+        // Bouton pour filtrer par département
+        openBottomSheetButton.setOnClickListener(v -> showFilterDialogDepartment());
 
+        // Bouton pour filtrer par site
+        openAlertDialogSite.setOnClickListener(v -> showFilterDialogSite());
+
+        // Bouton de recherche
         searchButton.setOnClickListener(v -> showSearchDialog());
-
-        // Initialiser Retrofit et l'interface API
-        employeeApi = ApiClient.getClient().create(ApiService.class);
-        // Charger les employés
-        fetchEmployees();
 
         return root;
     }
@@ -94,12 +103,15 @@ public class FragmentEmployee extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // Rafraîchir les employés chaque fois que le fragment devient visible
-        fetchEmployees();
-
+        // Si vous souhaitez recharger la liste quand on revient sur le fragment, décommentez:
+        // employeeViewModel.loadEmployees();
+        // checkUserRole() si nécessaire
     }
+
+    // Méthode pour vérifier le rôle de l’utilisateur (admin ou visiteur) et gérer la visibilité
     private void checkUserRole() {
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity()
+                .getSharedPreferences("UserSession", Context.MODE_PRIVATE);
         String userRole = sharedPreferences.getString("user_role", "visitor");
 
         Log.d("CHECK_USER_ROLE", "Rôle récupéré : " + userRole);
@@ -115,242 +127,98 @@ public class FragmentEmployee extends Fragment {
         }
     }
 
+    // Récupération d’un éventuel retour d’Activity (ex: reconnaissance vocale)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && resultCode == getActivity().RESULT_OK && data != null) {
+        // Exemple de gestion de la reconnaissance vocale
+        if (requestCode == 100 && resultCode == requireActivity().RESULT_OK && data != null) {
             ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             if (results.contains("admin access")) { // Phrase secrète
                 startActivity(new Intent(getActivity(), LoginActivity.class));
             }
         }
     }
-    private void fetchEmployees() {
-        Call<List<Employee>> call = employeeApi.getAllEmployees();
-        call.enqueue(new Callback<List<Employee>>() {
-            @Override
-            public void onResponse(Call<List<Employee>> call, Response<List<Employee>> response) {
-                if (!response.isSuccessful()) {
-                    Log.e("API_ERROR", "Code d'erreur : " + response.code());
-                    Toast.makeText(requireContext(), "Échec du chargement des données", Toast.LENGTH_SHORT).show();
-                    return;
-                }
 
-                if (response.body() == null || response.body().isEmpty()) {
-                    Log.e("API_ERROR", "Le corps de la réponse est nul ou vide");
-                    Toast.makeText(requireContext(), "Aucun employé trouvé", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                Log.d("API_SUCCESS", "Données récupérées avec succès : " + response.body().size());
-                Log.d("EMPLOYEE_LIST", "Employés chargés : " + employeeList.size());
-                for (Employee employee : employeeList) {
-                    Log.d("EMPLOYEE", "Nom : " + employee.getName() + ", Département ID : " + employee.idDepartment());
-                }
-                // Mettre à jour les listes avec les données récupérées
-                employeeList.clear();
-                employeeList.addAll(response.body());
-
-                // Afficher tous les employés par défaut
-                filteredList.clear();
-                filteredList.addAll(employeeList);
-
-                // Initialiser et configurer l'adaptateur
-                adapter = new EmployeeAdapter(requireContext(), filteredList);
-                recyclerView.setAdapter(adapter);
-            }
-
-            @Override
-            public void onFailure(Call<List<Employee>> call, Throwable t) {
-                Log.e("API_FAILURE", "Erreur réseau : " + t.getMessage());
-                Toast.makeText(requireContext(), "Erreur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
+    // -------------------------------------------------------------------
+    //  Dialogue de filtre par département
+    // -------------------------------------------------------------------
     private void showFilterDialogDepartment() {
-        // Charger la liste des départements via l'API
-        Call<List<Department>> call = employeeApi.getAllDepartments(); // Assurez-vous que la méthode existe dans ApiService
-        call.enqueue(new Callback<List<Department>>() {
-            @Override
-            public void onResponse(Call<List<Department>> call, Response<List<Department>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Department> departments = response.body();
-
-                    // Préparez un tableau contenant uniquement les noms des départements
-                    String[] departmentNames = new String[departments.size()];
-                    Log.d("DEPARTMENTS", "Départements chargés : " + departments.size());
-                    for (int i = 0; i < departments.size(); i++) {
-                        departmentNames[i] = departments.get(i).getDepartment_name();
-
-                    }
-
-
-                    // Créez l'AlertDialog
-                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                    builder.setTitle("Filtrer par services");
-
-                    // Ajoutez la liste des départements
-                    builder.setItems(departmentNames, (dialog, which) -> {
-                        // Récupérez l'idDepartment du département sélectionné
-                        long selectedDepartmentId = departments.get(which).getIdDepartment();
-
-                        // Filtrez le RecyclerView
-                        filterRecyclerViewByDepartment(selectedDepartmentId);
-                    });
-
-                    // Affichez la boîte de dialogue
-                    builder.create().show();
-                } else {
-                    Toast.makeText(requireContext(), "Impossible de charger les départements", Toast.LENGTH_SHORT).show();
-                }
+        // On demande au ViewModel de charger les départements
+        employeeViewModel.loadDepartments();
+        employeeViewModel.getDepartments().observe(getViewLifecycleOwner(), departments -> {
+            if (departments == null || departments.isEmpty()) {
+                Toast.makeText(requireContext(),
+                        "Impossible de charger les départements",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String[] departmentNames = new String[departments.size()];
+            for (int i = 0; i < departments.size(); i++) {
+                departmentNames[i] = departments.get(i).getDepartment_name();
             }
 
-            @Override
-            public void onFailure(Call<List<Department>> call, Throwable t) {
-                Toast.makeText(requireContext(), "Erreur réseau : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            // Affichage du dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Filtrer par services");
+            builder.setItems(departmentNames, (dialog, which) -> {
+                long selectedDepartmentId = departments.get(which).getIdDepartment();
+                // Appel de la méthode de filtrage dans le ViewModel
+                employeeViewModel.filterByDepartment(selectedDepartmentId);
+            });
+            builder.create().show();
         });
     }
 
+    // -------------------------------------------------------------------
+    //  Dialogue de filtre par site
+    // -------------------------------------------------------------------
     private void showFilterDialogSite() {
-        // Charger la liste des départements via l'API
-        Call<List<Site>> call = employeeApi.getAllSites(); // Assurez-vous que la méthode existe dans ApiService
-        call.enqueue(new Callback<List<Site>>() {
-            @Override
-            public void onResponse(Call<List<Site>> call, Response<List<Site>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Site> sites = response.body();
-
-                    // Préparez un tableau contenant uniquement les noms des départements
-                    String[] sitesNames = new String[sites.size()];
-                    Log.d("DEPARTMENTS", "Départements chargés : " + sites.size());
-                    for (int i = 0; i < sites.size(); i++) {
-                        sitesNames[i] = sites.get(i).getCity();
-
-                    }
-
-
-                    // Créez l'AlertDialog
-                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                    builder.setTitle("Filtrer par site");
-
-                    // Ajoutez la liste des départements
-                    builder.setItems(sitesNames, (dialog, which) -> {
-                        // Récupérez l'idDepartment du département sélectionné
-                        long selectedSiteId = sites.get(which).getIdSite();
-
-                        // Filtrez le RecyclerView
-                        filterRecyclerViewBySite(selectedSiteId);
-                    });
-
-                    // Affichez la boîte de dialogue
-                    builder.create().show();
-                } else {
-                    Toast.makeText(requireContext(), "Impossible de charger les départements", Toast.LENGTH_SHORT).show();
-                }
+        employeeViewModel.loadSites();
+        employeeViewModel.getSites().observe(getViewLifecycleOwner(), sites -> {
+            if (sites == null || sites.isEmpty()) {
+                Toast.makeText(requireContext(),
+                        "Impossible de charger les sites",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            String[] siteNames = new String[sites.size()];
+            for (int i = 0; i < sites.size(); i++) {
+                siteNames[i] = sites.get(i).getCity();
             }
 
-            @Override
-            public void onFailure(Call<List<Site>> call, Throwable t) {
-                Toast.makeText(requireContext(), "Erreur réseau : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setTitle("Filtrer par site");
+            builder.setItems(siteNames, (dialog, which) -> {
+                long selectedSiteId = sites.get(which).getIdSite();
+                employeeViewModel.filterBySite(selectedSiteId);
+            });
+            builder.create().show();
         });
     }
 
-    // Méthode pour filtrer les employés par departmentId
-    private void filterRecyclerViewByDepartment(long departmentId) {
-        // Si la liste filtrée est vide, appliquez le filtre sur la liste complète
-        List<Employee> sourceList = filteredList.isEmpty() ? new ArrayList<>(employeeList) : new ArrayList<>(filteredList);
-
-        // Réinitialisez la liste filtrée pour ne garder que les résultats
-        filteredList.clear();
-        for (Employee employee : sourceList) {
-            if (employee.idDepartment() == departmentId) { // Assurez-vous que getIdDepartment() existe
-                filteredList.add(employee);
-            }
-        }
-
-        Log.d("FILTER", "Département sélectionné ID : " + departmentId);
-        Log.d("FILTER", "Employés filtrés : " + filteredList.size());
-
-        // Mettez à jour l'adaptateur
-        updateRecyclerView();
-    }
-
-    private void filterRecyclerViewBySite(long siteId) {
-        // Si la liste filtrée est vide, appliquez le filtre sur la liste complète
-        List<Employee> sourceList = filteredList.isEmpty() ? new ArrayList<>(employeeList) : new ArrayList<>(filteredList);
-
-        // Réinitialisez la liste filtrée pour ne garder que les résultats
-        filteredList.clear();
-        for (Employee employee : sourceList) {
-            if (employee.idSite() == siteId) { // Assurez-vous que getIdSite() existe
-                filteredList.add(employee);
-            }
-        }
-
-        Log.d("FILTER", "Site sélectionné ID : " + siteId);
-        Log.d("FILTER", "Employés filtrés : " + filteredList.size());
-
-        // Mettez à jour l'adaptateur
-        updateRecyclerView();
-    }
-
-    // Méthode pour mettre à jour RecyclerView
-    private void updateRecyclerView() {
-        if (adapter != null) {
-            adapter.updateData(filteredList);
-            Log.d("FILTER", "RecyclerView mis à jour avec " + filteredList.size() + " employés");
-        } else {
-            Log.e("FILTER_ERROR", "L'adaptateur est null");
-        }
-    }
-
+    // -------------------------------------------------------------------
+    //  Dialogue de recherche
+    // -------------------------------------------------------------------
     private void showSearchDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Rechercher un employé");
 
-        // Ajouter un champ de texte
-        final View customLayout = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_search, null);
+        // Inflate le layout custom du dialog
+        final View customLayout = LayoutInflater
+                .from(requireContext())
+                .inflate(R.layout.dialog_search, null);
         builder.setView(customLayout);
 
-        @SuppressLint({"MissingInflatedId", "LocalSuppress"}) final EditText searchInput = customLayout.findViewById(R.id.edit_search);
+        final EditText searchInput = customLayout.findViewById(R.id.edit_search);
 
-        // Boutons
         builder.setPositiveButton("Rechercher", (dialog, which) -> {
             String query = searchInput.getText().toString().trim();
-            filterEmployees(query);
+            // Appel de la logique de recherche dans le ViewModel
+            employeeViewModel.searchEmployees(query);
         });
         builder.setNegativeButton("Annuler", (dialog, which) -> dialog.dismiss());
 
         builder.show();
     }
-
-    private void filterEmployees(String query) {
-        if (query.isEmpty()) {
-            // Restaurer la liste complète si la recherche est vide
-            filteredList.clear();
-            filteredList.addAll(employeeList);
-        } else {
-            // Convertir la requête en minuscules pour une recherche insensible à la casse
-            String lowerCaseQuery = query.toLowerCase();
-            filteredList.clear();
-
-            // Filtrer les employés par nom ou prénom contenant la requête
-            for (Employee employee : employeeList) {
-                if ((employee.getName() != null && employee.getName().toLowerCase().contains(lowerCaseQuery)) ||
-                        (employee.getFirstname() != null && employee.getFirstname().toLowerCase().contains(lowerCaseQuery))) {
-                    filteredList.add(employee);
-                }
-            }
-        }
-
-        // Mettre à jour l'adaptateur
-        if (adapter != null) {
-            adapter.updateData(filteredList);
-        }
-    }
-
-
 }

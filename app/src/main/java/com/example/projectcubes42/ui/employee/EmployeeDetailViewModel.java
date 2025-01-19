@@ -15,46 +15,71 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddEmployeeViewModel extends ViewModel {
+public class EmployeeDetailViewModel extends ViewModel {
 
     private final EmployeeRepository repository;
 
-    // LiveData pour les listes de départements et sites
+    // LiveData pour stocker l'employé actuel
+    private final MutableLiveData<Employee> employeeLiveData = new MutableLiveData<>();
+
+    // LiveData pour stocker la liste des départements
     private final MutableLiveData<List<Department>> departmentsLiveData = new MutableLiveData<>();
+
+    // LiveData pour stocker la liste des sites
     private final MutableLiveData<List<Site>> sitesLiveData = new MutableLiveData<>();
 
-    // LiveData pour afficher des messages (toast) dans l’UI
+    // Eventuel LiveData pour écouter les résultats (succès/erreur)
     private final MutableLiveData<String> toastMessageLiveData = new MutableLiveData<>();
 
-    // LiveData pour fermer l’écran après succès (optionnel)
     private final MutableLiveData<Boolean> closeScreenEvent = new MutableLiveData<>();
-
-    public AddEmployeeViewModel() {
+    public EmployeeDetailViewModel() {
         repository = new EmployeeRepository();
     }
 
-    // -------------------------
-    //  GETTERS
-    // -------------------------
-    public LiveData<List<Department>> getDepartmentsLiveData() {
+    // ------------------
+    //   GETTERS
+    // ------------------
+    public LiveData<Employee> getEmployee() {
+        return employeeLiveData;
+    }
+
+    public LiveData<List<Department>> getDepartments() {
         return departmentsLiveData;
     }
 
-    public LiveData<List<Site>> getSitesLiveData() {
+    public LiveData<List<Site>> getSites() {
         return sitesLiveData;
     }
 
-    public LiveData<String> getToastMessageLiveData() {
+    public LiveData<String> getToastMessage() {
         return toastMessageLiveData;
     }
-
     public LiveData<Boolean> getCloseScreenEvent() {
         return closeScreenEvent;
     }
+    // ------------------
+    //   CHARGEMENT
+    // ------------------
+    public void fetchEmployee(Long employeeId) {
+        repository.getEmployeeById(employeeId).enqueue(new Callback<Employee>() {
+            @Override
+            public void onResponse(Call<Employee> call, Response<Employee> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    employeeLiveData.setValue(response.body());
+                } else {
+                    toastMessageLiveData.setValue("Erreur lors de la récupération de l'employé.");
+                    employeeLiveData.setValue(null);
+                }
+            }
 
-    // -------------------------
-    //  CHARGER DEPARTEMENTS
-    // -------------------------
+            @Override
+            public void onFailure(Call<Employee> call, Throwable t) {
+                toastMessageLiveData.setValue("Erreur réseau : " + t.getMessage());
+                employeeLiveData.setValue(null);
+            }
+        });
+    }
+
     public void loadDepartments() {
         repository.getAllDepartments1().enqueue(new Callback<List<Department>>() {
             @Override
@@ -73,9 +98,6 @@ public class AddEmployeeViewModel extends ViewModel {
         });
     }
 
-    // -------------------------
-    //  CHARGER SITES
-    // -------------------------
     public void loadSites() {
         repository.getAllSites1().enqueue(new Callback<List<Site>>() {
             @Override
@@ -94,25 +116,48 @@ public class AddEmployeeViewModel extends ViewModel {
         });
     }
 
-    // -------------------------
-    //  SAUVEGARDER EMPLOYÉ
-    // -------------------------
-    public void saveEmployee(Employee employee) {
-        repository.saveEmployee(employee).enqueue(new Callback<Employee>() {
+    // ------------------
+    //  MISE À JOUR
+    // ------------------
+    public void updateEmployee(Employee employee) {
+        repository.updateEmployee(employee.getId(), employee).enqueue(new Callback<Employee>() {
             @Override
             public void onResponse(Call<Employee> call, Response<Employee> response) {
                 if (response.isSuccessful()) {
-                    toastMessageLiveData.setValue("Employé ajouté avec succès !");
-                    // Signaler à l'UI de se fermer (optionnel)
+                    toastMessageLiveData.setValue("Employé mis à jour avec succès !");
                     closeScreenEvent.setValue(true);
+                    // Recharger les détails mis à jour
+                    fetchEmployee(employee.getId());
+
                 } else {
-                    toastMessageLiveData.setValue("Erreur lors de l'ajout de l'employé");
+                    toastMessageLiveData.setValue("Erreur lors de la mise à jour de l'employé");
                 }
             }
 
             @Override
             public void onFailure(Call<Employee> call, Throwable t) {
-                toastMessageLiveData.setValue("Échec de l'ajout de l'employé : " + t.getMessage());
+                toastMessageLiveData.setValue("Erreur réseau update : " + t.getMessage());
+            }
+        });
+    }
+
+    // ------------------
+    //  SUPPRESSION
+    // ------------------
+    public void deleteEmployee(Long employeeId) {
+        repository.deleteEmployee(employeeId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    toastMessageLiveData.setValue("Employé supprimé avec succès !");
+                } else {
+                    toastMessageLiveData.setValue("Erreur lors de la suppression de l'employé");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                toastMessageLiveData.setValue("Erreur réseau suppression : " + t.getMessage());
             }
         });
     }

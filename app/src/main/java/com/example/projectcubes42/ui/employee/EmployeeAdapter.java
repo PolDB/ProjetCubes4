@@ -71,8 +71,9 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
 
         Log.d("ADAPTER", "Nouveaux employés : " + newEmployeeList.size());
 
-        // Vide l'ancienne liste
-      // Ajoute les nouveaux employés
+        // Met à jour la liste
+        this.employeeList.clear();
+        this.employeeList.addAll(newEmployeeList);
 
         Log.d("ADAPTER", "Liste des employés mise à jour : " + this.employeeList.size());
 

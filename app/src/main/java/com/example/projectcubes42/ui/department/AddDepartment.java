@@ -6,23 +6,19 @@ import android.util.Log;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Department;
-import com.example.projectcubes42.data.network.ApiClient;
-import com.example.projectcubes42.data.network.ApiService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AddDepartment extends AppCompatActivity {
 
     private EditText editTextService;
     private FloatingActionButton buttonSendFormService;
-    Long id_department;
-    String department_name;
+
+    // ViewModel
+    private AddDepartmentViewModel viewModel;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -30,63 +26,58 @@ public class AddDepartment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_add_service);
 
-        // Initialiser les vues avec findViewById
+        // 1. Instancier le ViewModel
+        viewModel = new ViewModelProvider(this).get(AddDepartmentViewModel.class);
+
+        // 2. Initialiser les vues
         editTextService = findViewById(R.id.editTextDepartment);
         buttonSendFormService = findViewById(R.id.buttonSendFormDepartement);
 
+        // 3. Observer le ViewModel
+        observeViewModel();
 
-
-
-        // Ajouter un listener au bouton "Enregistrer"
+        // 4. Click Listener
         buttonSendFormService.setOnClickListener(v -> sendServiceData());
-
     }
 
-
-    public void sendServiceData() {
-        department_name = editTextService.getText().toString().trim();
-
-        if (department_name.isEmpty()) {
-            Log.e("API", "Le nom du département est vide.");
-            return;
-        }
-        // Créez une instance de l'objet Employee
-        Department department = new Department(id_department, department_name);
-
-        // Obtenez l'instance de Retrofit et de l'interface ApiService
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Appelez la méthode addEmployee
-        Call<Department> call = apiService.addDepartment(department);
-
-        call.enqueue(new Callback<Department>() {
-            @Override
-            public void onResponse(Call<Department> call, Response<Department> response) {
-                if (response.isSuccessful()) {
-                    Log.d("API", "Service ajouté avec succès !");
-                } else {
-                    Log.e("API", "Erreur : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Department> call, Throwable t) {
-                Log.e("API", "Échec : " + t.getMessage());
+    private void observeViewModel() {
+        // Afficher un Toast en cas de message
+        viewModel.getToastMessageLiveData().observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Log.d("AddDepartment", message);
+                // Vous pouvez utiliser Toast si vous préférez
+                // Toast.makeText(AddDepartment.this, message, Toast.LENGTH_SHORT).show();
             }
         });
 
-
-
-
-        clearFields();
-        finish();
+        // Fermer l'Activity quand l'événement est émis
+        viewModel.getCloseScreenEvent().observe(this, shouldClose -> {
+            if (Boolean.TRUE.equals(shouldClose)) {
+                // Vous pouvez vider les champs avant de terminer, ou le faire avant
+                clearFields();
+                finish();
+            }
+        });
     }
 
+    private void sendServiceData() {
+        String department_name = editTextService.getText().toString().trim();
+        if (department_name.isEmpty()) {
+            Log.e("AddDepartment", "Le nom du département est vide.");
+            return;
+        }
 
+        // Construire l'objet Department
+        Department department = new Department(null, department_name);
 
+        // Appel ViewModel
+        viewModel.addDepartment(department);
+
+        // Optionnel : si vous souhaitez vider les champs tout de suite
+        // clearFields();
+    }
 
     private void clearFields() {
-        // Effacer le texte des champs
         editTextService.setText("");
     }
 }

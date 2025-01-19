@@ -13,35 +13,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Department;
 import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.model.Site;
-import com.example.projectcubes42.data.network.ApiClient;
-import com.example.projectcubes42.data.network.ApiService;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class EmployeeDetail extends AppCompatActivity {
 
-    private TextView nameDetail, firstnameDetail, phoneDetail, emailDetail, departmentDetail, siteDetail;
-    private Button btnEdit, btnSave, btnDelete;
+    private TextView nameDetail, firstnameDetail, phoneDetail, emailDetail;
     private Spinner spinnerService, spinnerSite;
+    private Button btnEdit, btnSave, btnDelete;
 
     private Long employeeId;
+
+    private EmployeeDetailViewModel viewModel;
 
     @SuppressLint({"RestrictedApi", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState); // Appel obligatoire
-        setContentView(R.layout.activity_employee_detail); // Charge le layout
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_employee_detail);
 
-        // Récupération de l'ID de l'employé à partir de l'Intent
+        // 1. Récupération de l'ID de l'employé
         employeeId = getIntent().getLongExtra("EMPLOYEE_ID", -1);
         if (employeeId == -1) {
             Toast.makeText(this, "Aucun employé trouvé", Toast.LENGTH_SHORT).show();
@@ -49,39 +46,158 @@ public class EmployeeDetail extends AppCompatActivity {
             return;
         }
 
-        Log.d("EMPLOYEE_DETAIL", "ID reçu dans Intent : " + employeeId);
-
-        // Initialisation des vues
+        // 2. Initialisation des vues
         nameDetail = findViewById(R.id.nameDetail);
         firstnameDetail = findViewById(R.id.firstnameDetail);
         phoneDetail = findViewById(R.id.phoneDetail);
         emailDetail = findViewById(R.id.emailDetail);
 
+        spinnerService = findViewById(R.id.employeeDepartmentDetail);
+        spinnerSite = findViewById(R.id.employeeSiteDetail);
+
         btnEdit = findViewById(R.id.employee_button_edit);
         btnSave = findViewById(R.id.employee_save_update);
         btnDelete = findViewById(R.id.employee_button_delete);
 
-        spinnerService = findViewById(R.id.employeeDepartmentDetail);
-        spinnerSite = findViewById(R.id.employeeSiteDetail);
+        // 3. Instanciation du ViewModel
+        viewModel = new ViewModelProvider(this).get(EmployeeDetailViewModel.class);
 
-        // Charger les données de l'employé
-        getEmployeeById(employeeId);
+        // 4. Observer les LiveData
+        observeViewModel();
 
-        // Écouteurs pour les boutons
+        // 5. Charger les données nécessaires
+        viewModel.fetchEmployee(employeeId); // Récupère l'employé cible
+        viewModel.loadDepartments();         // Charge la liste des départements
+        viewModel.loadSites();// Charge la liste des sites
+        viewModel.getCloseScreenEvent().observe(this, shouldClose -> {
+            if (Boolean.TRUE.equals(shouldClose)) {
+                finish();  // L’Activity se termine ici
+            }
+        });
+
+        // 6. Configuration des boutons
         btnSave.setOnClickListener(v -> saveEmployeeDetails());
         btnEdit.setOnClickListener(v -> enableFields(true));
-        btnDelete.setOnClickListener(v -> deleteEmployee(employeeId));
+        btnDelete.setOnClickListener(v -> {
+            viewModel.deleteEmployee(employeeId);
+            finish(); // On termine l'Activity après la suppression
+        });
 
-        configureServiceSpinner();
-        configureSiteSpinner();
+        // Par défaut, les champs sont en lecture seule
+        enableFields(false);
     }
 
+    private void observeViewModel() {
+        // Observer l’employé récupéré
+        viewModel.getEmployee().observe(this, employee -> {
+            if (employee != null) {
+                // Mise à jour des champs UI
+                nameDetail.setText(employee.getName());
+                firstnameDetail.setText(employee.getFirstname());
+                phoneDetail.setText(employee.getPhone());
+                emailDetail.setText(employee.getMail());
 
+                // Sélection du département et du site dans les spinners
+                selectDepartmentInSpinner(employee.idDepartment());
+                selectSiteInSpinner(employee.idSite());
+            }
+        });
+
+        // Observer la liste des départements
+        viewModel.getDepartments().observe(this, departments -> {
+            if (departments != null) {
+                setupDepartmentSpinner(departments);
+            }
+        });
+
+        // Observer la liste des sites
+        viewModel.getSites().observe(this, sites -> {
+            if (sites != null) {
+                setupSiteSpinner(sites);
+            }
+        });
+
+        // Observer les messages Toast
+        viewModel.getToastMessage().observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(EmployeeDetail.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
+    //  Configurer les spinners (départements & sites)
+    // -------------------------------------------------------------
+    private void setupDepartmentSpinner(List<Department> departments) {
+        ArrayAdapter<Department> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                departments
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerService.setAdapter(adapter);
+
+        // Tente de sélectionner le bon département (si l'employé est déjà chargé)
+        if (viewModel.getEmployee().getValue() != null) {
+            selectDepartmentInSpinner(viewModel.getEmployee().getValue().idDepartment());
+        }
+    }
+
+    private void setupSiteSpinner(List<Site> sites) {
+        ArrayAdapter<Site> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                sites
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSite.setAdapter(adapter);
+
+        // Tente de sélectionner le bon site (si l'employé est déjà chargé)
+        if (viewModel.getEmployee().getValue() != null) {
+            selectSiteInSpinner(viewModel.getEmployee().getValue().idSite());
+        }
+    }
+
+    private void selectDepartmentInSpinner(Long departmentId) {
+        if (departmentId == null) return;
+        if (spinnerService.getAdapter() instanceof ArrayAdapter) {
+            ArrayAdapter<Department> adapter =
+                    (ArrayAdapter<Department>) spinnerService.getAdapter();
+            for (int i = 0; i < adapter.getCount(); i++) {
+                Department d = adapter.getItem(i);
+                if (d != null && d.getIdDepartment().equals(departmentId)) {
+                    spinnerService.setSelection(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    private void selectSiteInSpinner(Long siteId) {
+        if (siteId == null) return;
+        if (spinnerSite.getAdapter() instanceof ArrayAdapter) {
+            ArrayAdapter<Site> adapter =
+                    (ArrayAdapter<Site>) spinnerSite.getAdapter();
+            for (int i = 0; i < adapter.getCount(); i++) {
+                Site s = adapter.getItem(i);
+                if (s != null && s.getIdSite().equals(siteId)) {
+                    spinnerSite.setSelection(i);
+                    break;
+                }
+            }
+        }
+    }
+
+    // -------------------------------------------------------------
+    //  Gestion des champs & boutons
+    // -------------------------------------------------------------
     private void enableFields(boolean enable) {
         nameDetail.setEnabled(enable);
         firstnameDetail.setEnabled(enable);
         phoneDetail.setEnabled(enable);
         emailDetail.setEnabled(enable);
+        spinnerService.setEnabled(enable);
+        spinnerSite.setEnabled(enable);
 
         if (enable) {
             nameDetail.requestFocus();
@@ -93,81 +209,23 @@ public class EmployeeDetail extends AppCompatActivity {
     }
 
     private void showKeyboard(View view) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager)
+                getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
         }
     }
 
-    private void configureServiceSpinner() {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Appel API pour récupérer les départements
-        Call<List<Department>> call = apiService.getAllDepartments();
-        call.enqueue(new Callback<List<Department>>() {
-            @Override
-            public void onResponse(Call<List<Department>> call, Response<List<Department>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Department> departments = response.body();
-
-                    // Ajouter les noms des départements pour le Spinner
-                    ArrayAdapter<Department> adapter = new ArrayAdapter<>(EmployeeDetail.this,
-                            android.R.layout.simple_spinner_item, departments);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerService.setAdapter(adapter);
-                } else {
-                    Log.e("API", "Erreur récupération départements : " + response.code());
-                    Toast.makeText(EmployeeDetail.this, "Erreur récupération des départements", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Department>> call, Throwable t) {
-                Log.e("API", "Échec API départements : " + t.getMessage());
-                Toast.makeText(EmployeeDetail.this, "Échec connexion API", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void configureSiteSpinner() {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Appel API pour récupérer les sites
-        Call<List<Site>> call = apiService.getAllSites();
-        call.enqueue(new Callback<List<Site>>() {
-            @Override
-            public void onResponse(Call<List<Site>> call, Response<List<Site>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Site> sites = response.body();
-
-                    // Ajouter les noms des sites pour le Spinner
-                    ArrayAdapter<Site> adapter = new ArrayAdapter<>(EmployeeDetail.this,
-                            android.R.layout.simple_spinner_item, sites);
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerSite.setAdapter(adapter);
-                } else {
-                    Log.e("API", "Erreur récupération sites : " + response.code());
-                    Toast.makeText(EmployeeDetail.this, "Erreur récupération des sites", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Site>> call, Throwable t) {
-                Log.e("API", "Échec API sites : " + t.getMessage());
-                Toast.makeText(EmployeeDetail.this, "Échec connexion API", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-
+    // -------------------------------------------------------------
+    //  Sauvegarde (mise à jour)
+    // -------------------------------------------------------------
     private void saveEmployeeDetails() {
+        // Récupération des valeurs
         String name = nameDetail.getText().toString().trim();
         String firstname = firstnameDetail.getText().toString().trim();
         String phone = phoneDetail.getText().toString().trim();
         String email = emailDetail.getText().toString().trim();
 
-        // Récupérer les départements et sites sélectionnés
         Department selectedDepartment = (Department) spinnerService.getSelectedItem();
         Site selectedSite = (Site) spinnerSite.getSelectedItem();
 
@@ -179,123 +237,11 @@ public class EmployeeDetail extends AppCompatActivity {
             return;
         }
 
-        // Mettre à jour l'employé
+        // Construit l'employé à jour
         Employee employee = new Employee(employeeId, name, firstname, phone, email, idDepartment, idSite);
-        updateEmployee(employee);
+        // Appel au ViewModel pour la mise à jour
+        viewModel.updateEmployee(employee);
+
+        enableFields(false);
     }
-
-    private void updateEmployee(Employee employee) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<Employee> call = apiService.updateEmployee(employee.getId(), employee);
-
-        call.enqueue(new Callback<Employee>() {
-            @Override
-            public void onResponse(Call<Employee> call, Response<Employee> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(EmployeeDetail.this, "Employé mis à jour avec succès !", Toast.LENGTH_SHORT).show();
-                    enableFields(false);
-                    Log.d("UPDATE_EMPLOYEE", "Mise à jour réussie, recharge les données...");
-                    getEmployeeById(employee.getId());
-                } else {
-                    Toast.makeText(EmployeeDetail.this, "Erreur lors de la mise à jour.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Employee> call, Throwable t) {
-                Toast.makeText(EmployeeDetail.this, "Erreur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        finish();
-    }
-
-    private void deleteEmployee(Long id) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<Void> call = apiService.deleteEmployee(id);
-
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(EmployeeDetail.this, "Employé supprimé avec succès !", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(EmployeeDetail.this, "Erreur lors de la suppression.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(EmployeeDetail.this, "Erreur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        finish();
-    }
-
-    private void getEmployeeById(Long employeeId) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<Employee> call = apiService.getEmployeeById(employeeId);
-
-        call.enqueue(new Callback<Employee>() {
-            @Override
-            public void onResponse(Call<Employee> call, Response<Employee> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Employee employee = response.body();
-
-                    // Affecter les valeurs des autres champs
-                    nameDetail.setText(employee.getName());
-                    firstnameDetail.setText(employee.getFirstname());
-                    phoneDetail.setText(employee.getPhone());
-                    emailDetail.setText(employee.getMail());
-
-                    // Sélectionner la valeur appropriée dans le spinner du département
-                    spinnerService.post(() -> {
-                        ArrayAdapter<Department> adapter = (ArrayAdapter<Department>) spinnerService.getAdapter();
-                        if (adapter != null) {
-                            for (int i = 0; i < adapter.getCount(); i++) {
-                                Department department = adapter.getItem(i);
-                                if (department != null && employee.idDepartment() != null && department.getIdDepartment().equals(employee.idDepartment())) {
-                                    spinnerService.setSelection(i);
-                                    break;
-                                }
-                            }
-                        } else {
-                            Log.e("SPINNER", "L'adaptateur du spinner des départements est nul.");
-                        }
-                    });
-
-                    // Sélectionner la valeur appropriée dans le spinner du site
-                    spinnerSite.post(() -> {
-                        ArrayAdapter<Site> adapter = (ArrayAdapter<Site>) spinnerSite.getAdapter();
-                        if (adapter != null) {
-                            for (int i = 0; i < adapter.getCount(); i++) {
-                                Site site = adapter.getItem(i);
-                                if (site != null && employee.idSite() != null && site.getIdSite().equals(employee.idSite())) {
-                                    spinnerSite.setSelection(i);
-                                    break;
-                                }
-                            }
-                        } else {
-                            Log.e("SPINNER", "L'adaptateur du spinner des sites est nul.");
-                        }
-                    });
-
-                } else {
-                    Toast.makeText(EmployeeDetail.this, "Erreur lors de la récupération des données.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Employee> call, Throwable t) {
-                Toast.makeText(EmployeeDetail.this, "Erreur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-
-    }
-
-
-
 }

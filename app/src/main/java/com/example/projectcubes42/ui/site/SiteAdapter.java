@@ -69,4 +69,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder
 
         }
     }
+    public void updateData(List<Site> newList) {
+        this.siteList = newList;
+        notifyDataSetChanged();
+    }
 }

@@ -59,6 +59,8 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e("LOGIN_ERROR", "Réponse du serveur: " + response.errorBody());
                     onLoginFailed();
                     return;
+                } else {
+                    onLoginSuccess();
                 }
 
                 AuthResponse authResponse = response.body();
@@ -91,19 +93,9 @@ public class LoginActivity extends AppCompatActivity {
         finish();
 
     }
-    private void onLoginSuccess(String role) {
+    private void onLoginSuccess() {
         Toast.makeText(this, "Connexion réussie", Toast.LENGTH_SHORT).show();
 
-        // Sauvegarde du rôle
-        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("user_role", role);
-        editor.apply();
 
-        // Redirection vers Drawer_activity
-        Intent intent = new Intent(LoginActivity.this, Drawer_activity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
     }
 }

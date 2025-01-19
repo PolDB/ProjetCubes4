@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,12 +20,13 @@ import com.example.projectcubes42.ui.employee.FragmentEmployee;
 import com.example.projectcubes42.ui.employee.FragmentEmployeeVisitor;
 import com.google.android.material.navigation.NavigationView;
 
-public class Drawer_activity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class Drawer_activity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private ImageView drawerImage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,17 +43,10 @@ public class Drawer_activity extends AppCompatActivity implements NavigationView
         // Initialiser le DrawerLayout et NavigationView
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this); // Définir le listener pour la navigation
 
-        // Accéder au header du NavigationView et récupérer l'ImageView
-        View headerView = navigationView.getHeaderView(0);
-        drawerImage = headerView.findViewById(R.id.imageView);
 
-        // Ajouter un clic listener sur l'ImageView pour ouvrir LoginActivity
-        drawerImage.setOnClickListener(v -> {
-            Intent intent = new Intent(Drawer_activity.this, LoginActivity.class);
-            startActivity(intent);
-        });
+
+
 
         // Configuration des destinations principales
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -78,24 +73,19 @@ public class Drawer_activity extends AppCompatActivity implements NavigationView
                 || super.onSupportNavigateUp();
     }
 
+
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_logout) {
-            // Effacer la session utilisateur
-            SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("user_role", "visiteur"); // Revenir à visiteur
-            editor.apply();
-
-            // Rediriger vers Drawer_activity pour recharger FragmentEmployeeVisitor
-            Intent intent = new Intent(this, Drawer_activity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        if (id == R.id.action_settings) {
+            // Rediriger vers MainActivity
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Efface la pile des activités
             startActivity(intent);
-            finish();
+            finish(); // Ferme l'activité actuelle si nécessaire
             return true;
         }
-        return false;
+        return super.onOptionsItemSelected(item);
     }
 }

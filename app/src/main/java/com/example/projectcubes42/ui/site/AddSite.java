@@ -3,33 +3,22 @@ package com.example.projectcubes42.ui.site;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectcubes42.R;
-import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.model.Site;
-import com.example.projectcubes42.data.network.ApiClient;
-import com.example.projectcubes42.data.network.ApiService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AddSite extends AppCompatActivity {
 
     private EditText editTextSite;
     private FloatingActionButton buttonSendFormSite;
 
-    Long id;
-    String city;
+    // ViewModel
+    private AddSiteViewModel viewModel;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -37,58 +26,58 @@ public class AddSite extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_add_site);
 
-        // Initialiser les vues avec findViewById
+        // 1. Instancier le ViewModel
+        viewModel = new ViewModelProvider(this).get(AddSiteViewModel.class);
+
+        // 2. Initialiser les vues
         editTextSite = findViewById(R.id.editTextSite);
         buttonSendFormSite = findViewById(R.id.buttonSendFormSite);
 
-        // Configurer le Spinner
+        // 3. Observer le ViewModel
+        observeViewModel();
 
-
-        // Ajouter un listener au bouton "Enregistrer"
+        // 4. Click Listener pour le bouton "Enregistrer"
         buttonSendFormSite.setOnClickListener(v -> sendSiteData());
-
     }
 
-
-    public void sendSiteData() {
-        city = editTextSite.getText().toString().trim();
-        // Créez une instance de l'objet Employee
-        Site site = new Site(id, city);
-
-        // Obtenez l'instance de Retrofit et de l'interface ApiService
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-
-        // Appelez la méthode addEmployee
-        Call<Site> call = apiService.addSite(site);
-
-        call.enqueue(new Callback<Site>() {
-            @Override
-            public void onResponse(Call<Site> call, Response<Site> response) {
-                if (response.isSuccessful()) {
-                    Log.d("API", "Employé ajouté avec succès !");
-                } else {
-                    Log.e("API", "Erreur : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Site> call, Throwable t) {
-                Log.e("API", "Échec : " + t.getMessage());
+    private void observeViewModel() {
+        // Observer les messages (Toast)
+        viewModel.getToastMessageLiveData().observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Log.d("AddSite", message);
+                // Ou en Toast :
+                // Toast.makeText(AddSite.this, message, Toast.LENGTH_SHORT).show();
             }
         });
 
-
-
-
-        clearFields();
-        finish();
+        // Observer l'événement de fermeture
+        viewModel.getCloseScreenEvent().observe(this, shouldClose -> {
+            if (Boolean.TRUE.equals(shouldClose)) {
+                clearFields();
+                finish();
+            }
+        });
     }
 
+    private void sendSiteData() {
+        String city = editTextSite.getText().toString().trim();
 
+        if (city.isEmpty()) {
+            Log.e("AddSite", "Le nom du site est vide.");
+            return;
+        }
 
+        // Construire l'objet Site
+        Site site = new Site(null, city);
+
+        // Appel au ViewModel
+        viewModel.addSite(site);
+
+        // Optionnel : si vous voulez déjà vider le champ :
+        // clearFields();
+    }
 
     private void clearFields() {
-        // Effacer le texte des champs
         editTextSite.setText("");
     }
 }

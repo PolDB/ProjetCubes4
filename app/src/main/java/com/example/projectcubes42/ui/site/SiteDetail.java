@@ -3,34 +3,26 @@ package com.example.projectcubes42.ui.site;
 import static com.google.android.material.internal.ViewUtils.showKeyboard;
 
 import android.annotation.SuppressLint;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectcubes42.R;
-import com.example.projectcubes42.data.model.Department;
 import com.example.projectcubes42.data.model.Site;
-import com.example.projectcubes42.data.network.ApiClient;
-import com.example.projectcubes42.data.network.ApiService;
-import com.example.projectcubes42.ui.department.DepartmentDetail;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class SiteDetail extends AppCompatActivity {
 
     private TextView siteDetail;
-
-    private Long id;
     private Button btnEdit, btnSave, btnDelete;
+    private Long siteId;
+
+    private SiteDetailViewModel viewModel;
 
     @SuppressLint({"MissingInflatedId", "RestrictedApi"})
     @Override
@@ -38,122 +30,89 @@ public class SiteDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_site_detail);
 
+        // 1. Récupération de l'ID du site depuis l'intent
+        siteId = getIntent().getLongExtra("SITE_ID", -1);
+        Log.d("SITE_ID", "ID reçu dans Intent : " + siteId);
 
-        Long siteId = getIntent().getLongExtra("SITE_ID", -1);
-        Log.d("DEPARTMENT_ID", "ID reçu dans Intent : " + siteId); // Log pour vérifier l'ID
-
-        siteDetail = findViewById(R.id.siteDetail);         // Vérifiez que R.id.nameDetail existe
+        // 2. Initialiser les vues
+        siteDetail = findViewById(R.id.siteDetail);
         btnEdit = findViewById(R.id.site_button_edit);
         btnSave = findViewById(R.id.site_save_update);
         btnDelete = findViewById(R.id.site_button_delete);
 
+        // 3. Instancier le ViewModel
+        viewModel = new ViewModelProvider(this).get(SiteDetailViewModel.class);
+
+        // 4. Observer le ViewModel
+        observeViewModel();
+
+        // 5. Charger le site si l'ID est valide
         if (siteId != -1) {
-            getSiteById(siteId);
+            viewModel.fetchSite(siteId);
         }
 
-        btnSave.setOnClickListener(v -> {
-            String siteName = siteDetail.getText().toString().trim();
+        // 6. Gérer les clics sur les boutons
+        btnSave.setOnClickListener(v -> onSaveClicked());
+        btnEdit.setOnClickListener(v -> onEditClicked());
+        btnDelete.setOnClickListener(v -> onDeleteClicked());
+    }
 
-
-            if (!siteName.isEmpty() ) {
-                Site site = new Site(id, siteName);
-                updateSite(siteId, site);
-                enableFields(false);
-                btnSave.setVisibility(View.GONE);
-                btnEdit.setVisibility(View.VISIBLE);
-            } else {
-                Toast.makeText(this, "Tous les champs doivent être remplis.", Toast.LENGTH_SHORT).show();
+    private void observeViewModel() {
+        // Observer le Site LiveData
+        viewModel.getSite().observe(this, site -> {
+            if (site != null) {
+                siteDetail.setText(site.getCity());
             }
         });
 
-        btnEdit.setOnClickListener(v -> {
-            enableFields(true);
-            siteDetail.requestFocus();
-            showKeyboard(siteDetail);
-            btnSave.setVisibility(View.VISIBLE);
-            btnEdit.setVisibility(View.GONE);
+        // Observer les messages Toast
+        viewModel.getToastMessage().observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(SiteDetail.this, message, Toast.LENGTH_SHORT).show();
+            }
         });
 
+        // Observer l'événement de fermeture de l'écran
+        viewModel.getCloseScreenEvent().observe(this, shouldClose -> {
+            if (Boolean.TRUE.equals(shouldClose)) {
+                finish();
+            }
+        });
+    }
 
-        btnDelete.setOnClickListener(v -> deleteSite(siteId));
+    // --------------------
+    //  Boutons
+    // --------------------
+    private void onSaveClicked() {
+        String siteName = siteDetail.getText().toString().trim();
+        if (!siteName.isEmpty()) {
+            // Construire un nouvel objet Site
+            Site site = new Site(siteId, siteName);
+            // Appel ViewModel pour update
+            viewModel.updateSite(siteId, site);
+
+            enableFields(false);
+            btnSave.setVisibility(View.GONE);
+            btnEdit.setVisibility(View.VISIBLE);
+        } else {
+            Toast.makeText(this, "Tous les champs doivent être remplis.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    private void onEditClicked() {
+        enableFields(true);
+        siteDetail.requestFocus();
+        showKeyboard(siteDetail);
+        btnSave.setVisibility(View.VISIBLE);
+        btnEdit.setVisibility(View.GONE);
+    }
+
+    private void onDeleteClicked() {
+        viewModel.deleteSite(siteId);
     }
 
     private void enableFields(boolean enable) {
         siteDetail.setEnabled(enable);
     }
-
-
-    private void updateSite(Long siteId, Site site) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<Site> call = apiService.updateSite(siteId, site);
-
-        call.enqueue(new Callback<Site>() {
-            @Override
-            public void onResponse(Call<Site> call, Response<Site> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(SiteDetail.this, "Site mis à jour avec succès !", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(SiteDetail.this, "Échec de la mise à jour.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Site> call, Throwable t) {
-                Toast.makeText(SiteDetail.this, "Erreur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        finish();
-    }
-
-
-    private void deleteSite(Long id) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<Void> call = apiService.deleteSite(id);
-
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Toast.makeText(SiteDetail.this, "Employé supprimé avec succès !", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(SiteDetail.this, "Échec de la suppression.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(SiteDetail.this, "Erreur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getSiteById(Long siteId) {
-        ApiService apiService = ApiClient.getClient().create(ApiService.class);
-        Call<Site> call = apiService.getSiteById(siteId);
-
-        call.enqueue(new Callback<Site>() {
-            @Override
-            public void onResponse(Call<Site> call, Response<Site> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Site site = response.body();
-                    siteDetail.setText(site.getCity()); // Assurez-vous que `getCity()` existe dans `Site`
-                    id = site.getIdSite();
-                } else {
-                    Toast.makeText(SiteDetail.this, "Impossible de charger les détails du site.", Toast.LENGTH_SHORT).show();
-                    Log.e("SiteDetail", "Erreur réponse : " + response.code());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Site> call, Throwable t) {
-                Toast.makeText(SiteDetail.this, "Erreur réseau : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("SiteDetail", "Erreur réseau", t);
-            }
-        });
-    }
-
 }
-
-
-

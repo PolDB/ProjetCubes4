@@ -70,4 +70,9 @@ public class DepartmentAdapter extends RecyclerView.Adapter<DepartmentAdapter.Se
             departmentTextView = itemView.findViewById(R.id.department_name);
         }
     }
+    public void updateData(List<Department> newList) {
+        this.departmentList = newList;
+        notifyDataSetChanged();
+    }
+
 }
