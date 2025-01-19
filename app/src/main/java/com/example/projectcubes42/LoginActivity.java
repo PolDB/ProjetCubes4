@@ -10,21 +10,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectcubes42.data.model.AuthResponse;
-import com.example.projectcubes42.data.model.LoginRequest;
-import com.example.projectcubes42.data.network.ApiClient;
-import com.example.projectcubes42.data.network.ApiService;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.example.projectcubes42.ui.login.LoginViewModel;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword;
     private Button btnLogin;
-    private ApiService authService;
+
+    // ViewModel
+    private LoginViewModel loginViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,67 +32,56 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.password);
         btnLogin = findViewById(R.id.login);
 
-        authService = ApiClient.getClient().create(ApiService.class);
+        // 1. Instancier le ViewModel
+        loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
 
-        btnLogin.setOnClickListener(v -> loginUser());
+        // 2. Observer le ViewModel
+        observeViewModel();
+
+        // 3. Définir l'action du bouton
+        btnLogin.setOnClickListener(v -> {
+            String username = etUsername.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
+            loginViewModel.login(username, password);
+        });
     }
 
-    private void loginUser() {
-        String username = etUsername.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(LoginActivity.this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        LoginRequest request = new LoginRequest(username, password);
-
-        authService.login(request).enqueue(new Callback<AuthResponse>() {
-            @Override
-            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
-                if (!response.isSuccessful() || response.body() == null) {
-                    Log.e("LOGIN_ERROR", "Code HTTP: " + response.code());
-                    Log.e("LOGIN_ERROR", "Réponse du serveur: " + response.errorBody());
-                    onLoginFailed();
-                    return;
-                } else {
-                    onLoginSuccess();
-                }
-
-                AuthResponse authResponse = response.body();
-                Log.d("LOGIN_SUCCESS", "Utilisateur: " + authResponse.getUsername() + " - Role: " + authResponse.getRole());
-
-                // Stocker le rôle en local
-                SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("user_role", authResponse.getRole());
-                editor.apply();
-
-                // Redirection vers Drawer_activity
-                Intent intent = new Intent(LoginActivity.this, Drawer_activity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("openEmployeeFragment", true); // Pour ouvrir FragmentEmployee
-                startActivity(intent);
-                finish();
+    private void observeViewModel() {
+        // Observer la réponse Auth en cas de succès
+        loginViewModel.getAuthResponseLiveData().observe(this, authResponse -> {
+            if (authResponse != null) {
+                // Stocker le rôle localement
+                saveUserRole(authResponse.getRole());
+                // Redirection
+                goToDrawerActivity();
             }
+        });
 
-            @Override
-            public void onFailure(Call<AuthResponse> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Erreur serveur : " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                onLoginFailed();
+        // Observer les messages (erreur, info)
+        loginViewModel.getToastMessageLiveData().observe(this, message -> {
+            if (message != null && !message.isEmpty()) {
+                Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+
+                // S'il y a eu un échec, on peut éventuellement terminer l'Activity
+                if (message.startsWith("Connexion échouée")) {
+                    finish();
+                }
             }
         });
     }
 
-    private void onLoginFailed() {
-        Toast.makeText(this, "Connexion échouée, vous n'êtes pas admin", Toast.LENGTH_SHORT).show();
-        finish();
-
+    private void saveUserRole(String role) {
+        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("user_role", role);
+        editor.apply();
     }
-    private void onLoginSuccess() {
-        Toast.makeText(this, "Connexion réussie", Toast.LENGTH_SHORT).show();
 
-
+    private void goToDrawerActivity() {
+        Intent intent = new Intent(LoginActivity.this, Drawer_activity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("openEmployeeFragment", true); // Pour ouvrir FragmentEmployee
+        startActivity(intent);
+        finish();
     }
 }
