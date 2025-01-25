@@ -38,7 +38,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/nameDetail"
+                    android:id="@+id/nameDetailVisitor"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:padding="5dp"
@@ -59,7 +59,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/firstnameDetail"
+                    android:id="@+id/firstnameDetailVisitor"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:padding="5dp"
@@ -79,7 +79,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/phoneDetail"
+                    android:id="@+id/phoneDetailVisitor"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:padding="5dp"
@@ -99,7 +99,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/emailDetail"
+                    android:id="@+id/emailDetailVisitor"
                     android:layout_marginStart="5dp"
                     android:padding="5dp"
                     android:text="pauldaubrive@gmail.com"
@@ -119,15 +119,15 @@
                     android:textStyle="bold" />
 
                 <Spinner
-                    android:id="@+id/employeeDepartmentDetail"
+                    android:id="@+id/employeeDepartmentDetailVisitor"
                     android:layout_marginStart="5dp"
                     android:padding="5dp"
                     android:text="Direction"
                     android:textColor="@color/black"
                     android:textSize="25dp"
-                    android:enabled="false"
-                    android:focusable="true"
-                    />
+                    android:focusable="false"
+                    android:clickable="false"
+                    android:background="@android:color/transparent"/>
             </TableRow>
 
             <TableRow>
@@ -139,51 +139,23 @@
                     android:textStyle="bold" />
 
                 <Spinner
-                    android:id="@+id/employeeSiteDetail"
+                    android:id="@+id/employeeSiteDetailVisitor"
                     android:layout_marginStart="5dp"
                     android:padding="5dp"
                     android:text="Paris"
                     android:textColor="@color/black"
                     android:textSize="25dp"
-                    android:enabled="false"
-                    android:focusable="true"/>
+                    android:focusable="false"
+                    android:clickable="false"
+                    android:background="@android:color/transparent"/>
             </TableRow>
         </TableLayout>
 
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/employee_button_edit"
-        android:layout_width="68dp"
-        android:layout_height="65dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="22dp"
-        android:layout_marginEnd="101dp"
-        android:drawableEnd="@drawable/baseline_edit_24"
-        android:contentDescription="edit"/>
 
-    <Button
-        android:id="@+id/employee_button_delete"
-        android:layout_width="66dp"
-        android:layout_height="62dp"
-        android:layout_alignBottom="@+id/materialToolbar2"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="23dp"
-        android:layout_marginEnd="18dp"
-        android:layout_marginBottom="15dp"
-        android:drawableEnd="@drawable/baseline_delete_24"
-        android:contentDescription="delete"/>
 
-    <Button
-        android:id="@+id/employee_save_update"
-        android:layout_width="257dp"
-        android:layout_height="62dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="485dp"
-        android:layout_marginEnd="79dp"
-        android:text="@string/sauvegarder" />
+
+
 </RelativeLayout>

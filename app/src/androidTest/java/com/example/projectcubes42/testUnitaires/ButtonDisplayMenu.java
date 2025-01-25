@@ -33,6 +33,6 @@ public class ButtonDisplayMenu {
         //Cliquer sur le bouton de connexino
         onView(ViewMatchers.withId(R.id.login))
                 .perform(click());
-        onView((withId(R.id.nav_logout))).perform(click());
+        onView((withId(R.id.login))).perform(click());
     }
 }

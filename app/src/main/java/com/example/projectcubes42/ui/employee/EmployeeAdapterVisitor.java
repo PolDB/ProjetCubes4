@@ -24,13 +24,13 @@ import com.example.projectcubes42.data.model.Employee;
 
 import java.util.List;
 
-public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.EmployeeViewHolder> {
+public class EmployeeAdapterVisitor extends RecyclerView.Adapter<EmployeeAdapterVisitor.EmployeeViewHolder> {
 
     private List<Employee> employeeList;
     private Context context;
 
     // Constructeur corrigé
-    public EmployeeAdapter(Context context, List<Employee> employeeList) {
+    public EmployeeAdapterVisitor(Context context, List<Employee> employeeList) {
         this.context = context;
         this.employeeList = employeeList;
     }
@@ -58,7 +58,7 @@ public class EmployeeAdapter extends RecyclerView.Adapter<EmployeeAdapter.Employ
         holder.imageView.setImageResource(R.drawable.baseline_call_24);
 
         holder.nameTextView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, EmployeeDetail.class);
+            Intent intent = new Intent(context, EmployeeDetailVisitor.class);
             Log.d("CURRENT_ACTIVITY", "ID envoyé : " + employee.getId());
             intent.putExtra("EMPLOYEE_ID", employee.getId());
             context.startActivity(intent);

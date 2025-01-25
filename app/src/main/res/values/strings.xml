@@ -50,4 +50,5 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="deconnexion">Deconnexion</string>
     <string name="image_profile">image profile</string>
+    <string name="sauvegarder">Sauvegarder</string>
 </resources>

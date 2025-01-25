@@ -31,7 +31,7 @@ import java.util.List;
 public class FragmentEmployeeVisitor extends Fragment {
 
     private RecyclerView recyclerView;
-    private EmployeeAdapter adapter;
+    private EmployeeAdapterVisitor adapter;
 
     private Button openBottomSheetButton, openAlertDialogSite, searchButton;
     private ImageView imageView;
@@ -52,7 +52,7 @@ public class FragmentEmployeeVisitor extends Fragment {
         imageView = root.findViewById(R.id.imageViewVisitor);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new EmployeeAdapter(requireContext(), new ArrayList<>());
+        adapter = new EmployeeAdapterVisitor(requireContext(), new ArrayList<>());
         recyclerView.setAdapter(adapter);
 
         // Récupération (ou création) du ViewModel

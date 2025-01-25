@@ -24,10 +24,6 @@
             android:icon="@drawable/baseline_location_pin_24"
             android:title="@string/menu_site"
             android:visible="true"/>
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@drawable/baseline_location_pin_24"
-            android:title="@string/deconnexion"
-            android:visible="true"/>
+
     </group>
 </menu>
