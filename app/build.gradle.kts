@@ -35,28 +35,38 @@ android {
 }
 
 dependencies {
-    implementation (libs.squareup.retrofit)
-    implementation (libs.converter.gson)
-    implementation (libs.gson)
-    implementation (libs.fragment.ktx)
-    implementation (libs.lifecycle.viewmodel.ktx.v261)
-    implementation (libs.material)
-    implementation(libs.appcompat)
+    // Dépendances principales de l'application
+    implementation(libs.squareup.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
+    implementation(libs.fragment.ktx)
+    implementation(libs.lifecycle.viewmodel.ktx.v261)
     implementation(libs.material)
+    implementation(libs.appcompat)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.lifecycle.livedata.ktx)
-    implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.annotation)
     implementation(libs.cronet.embedded)
-    implementation(libs.espresso.intents)
     implementation(libs.biometric)
-    testImplementation(libs.junit)
+    implementation(libs.spring.security.crypto)
+
+    // Dépendances de test
+    testImplementation(libs.junit) // JUnit 4
+    testImplementation(libs.mockito.core.v531) // Mockito core
+
+    // LiveData Testing
+    testImplementation(libs.core.testing.v220) // androidx.arch.core:core-testing:2.2.0
+
+    // Dépendances de test d'instrumentation
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation (libs.spring.security.crypto)
 
+    // (Optionnel) Si tu utilises les règles Espresso comme ActivityTestRule
+    androidTestImplementation (libs.rules)
 
+    // (Optionnel) Le runner d'AndroidX, si tu en as besoin
+    androidTestImplementation (libs.runner)
 }

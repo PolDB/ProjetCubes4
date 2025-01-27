@@ -15,6 +15,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Department;
+import com.example.projectcubes42.data.model.Employee;
+import com.example.projectcubes42.ui.employee.EmployeeViewModel;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DepartmentDetail extends AppCompatActivity {
 
@@ -22,8 +30,9 @@ public class DepartmentDetail extends AppCompatActivity {
     private Button btnEdit, btnSave, btnDelete;
     private Long departmentId;
 
-    // ViewModel
+    // ViewModels
     private DepartmentDetailViewModel viewModel;
+    private EmployeeViewModel employeeViewModel;
 
     @SuppressLint({"MissingInflatedId", "RestrictedApi"})
     @Override
@@ -41,8 +50,9 @@ public class DepartmentDetail extends AppCompatActivity {
         btnSave = findViewById(R.id.service_save_update);
         btnDelete = findViewById(R.id.service_button_delete);
 
-        // 3. Instancier le ViewModel
+        // 3. Instancier les ViewModels
         viewModel = new ViewModelProvider(this).get(DepartmentDetailViewModel.class);
+        employeeViewModel = new ViewModelProvider(this).get(EmployeeViewModel.class);
 
         // 4. Observer le ViewModel
         observeViewModel();
@@ -109,7 +119,26 @@ public class DepartmentDetail extends AppCompatActivity {
     }
 
     private void onDeleteClicked() {
-        viewModel.deleteDepartment(departmentId);
+        // 1. Appel à la méthode du EmployeeViewModel pour récupérer la liste des employés
+        employeeViewModel.fetchEmployeesByDepartment(departmentId).enqueue(new Callback<List<Employee>>() {
+            @Override
+            public void onResponse(Call<List<Employee>> call, Response<List<Employee>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    int nbDeSalaries = response.body().size();
+
+                    // 2. Ouvrir la boîte de dialogue avec le bon nombre de salariés
+                    viewModel.confirmDeleteDepartment(DepartmentDetail.this, departmentId, nbDeSalaries);
+
+                } else {
+                    Toast.makeText(DepartmentDetail.this, "Impossible de récupérer la liste des salariés.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Employee>> call, Throwable t) {
+                Toast.makeText(DepartmentDetail.this, "Erreur réseau : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // -------------------------

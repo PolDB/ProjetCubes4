@@ -107,4 +107,11 @@ public class EmployeeRepository {
     public Call<Employee> saveEmployee(Employee employee) {
         return apiService.saveEmployee(employee);
     }
+    public Call<List<Employee>> getEmployeesByDepartment(Long departmentId) {
+        return apiService.getEmployeesByDepartment(departmentId);
+    }
+
+    public Call<List<Employee>> getEmployeesBySite(Long siteId) {
+        return apiService.getEmployeesBySite(siteId);
+    }
 }

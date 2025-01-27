@@ -16,12 +16,6 @@
       <SelectionState runConfigName="testSearchButtonDisplaysAlertDialog()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testSearchButtonDisplaysAlertDialog() (2)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="testSearchButtonDisplaysAlertDialog() (3)">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="testSearchButtonDisplaysAlertDialog() (4)">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

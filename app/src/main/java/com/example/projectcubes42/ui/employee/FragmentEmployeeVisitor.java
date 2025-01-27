@@ -37,6 +37,8 @@ public class FragmentEmployeeVisitor extends Fragment {
     private ImageView imageView;
 
     private EmployeeViewModel employeeViewModel;
+    private int clickCount = 0;
+    private static final int REQUIRED_CLICKS = 5;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -73,8 +75,14 @@ public class FragmentEmployeeVisitor extends Fragment {
         openAlertDialogSite.setOnClickListener(v -> showFilterDialogSite());
         searchButton.setOnClickListener(v -> showSearchDialog());
         imageView.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), LoginActivity.class);
-            startActivity(intent);
+            clickCount++;
+
+            if(clickCount ==  REQUIRED_CLICKS){
+                clickCount=0;
+                Intent intent = new Intent(requireContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+
         });
 
         return root;

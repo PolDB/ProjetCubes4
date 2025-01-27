@@ -145,6 +145,7 @@ public class EmployeeDetailViewModel extends ViewModel {
     //  SUPPRESSION
     // ------------------
     public void deleteEmployee(Long employeeId) {
+
         repository.deleteEmployee(employeeId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

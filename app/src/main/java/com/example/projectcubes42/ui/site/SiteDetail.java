@@ -14,7 +14,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectcubes42.R;
+import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.model.Site;
+import com.example.projectcubes42.ui.department.DepartmentDetail;
+import com.example.projectcubes42.ui.employee.EmployeeViewModel;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SiteDetail extends AppCompatActivity {
 
@@ -23,6 +32,7 @@ public class SiteDetail extends AppCompatActivity {
     private Long siteId;
 
     private SiteDetailViewModel viewModel;
+    private EmployeeViewModel employeeViewModel;
 
     @SuppressLint({"MissingInflatedId", "RestrictedApi"})
     @Override
@@ -42,7 +52,7 @@ public class SiteDetail extends AppCompatActivity {
 
         // 3. Instancier le ViewModel
         viewModel = new ViewModelProvider(this).get(SiteDetailViewModel.class);
-
+        employeeViewModel = new ViewModelProvider(this).get(EmployeeViewModel.class);
         // 4. Observer le ViewModel
         observeViewModel();
 
@@ -109,7 +119,26 @@ public class SiteDetail extends AppCompatActivity {
     }
 
     private void onDeleteClicked() {
-        viewModel.deleteSite(siteId);
+        // 1. Appel à la méthode du EmployeeViewModel pour récupérer la liste des employés
+        employeeViewModel.fetchEmployeesBySite(siteId).enqueue(new Callback<List<Employee>>() {
+            @Override
+            public void onResponse(Call<List<Employee>> call, Response<List<Employee>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    int nbDeSalaries = response.body().size();
+
+                    // 2. Ouvrir la boîte de dialogue avec le bon nombre de salariés
+                    viewModel.confirmDeleteSite(SiteDetail.this, siteId, nbDeSalaries);
+
+                } else {
+                    Toast.makeText(SiteDetail.this, "Impossible de récupérer la liste des salariés.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Employee>> call, Throwable t) {
+                Toast.makeText(SiteDetail.this, "Erreur réseau : " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void enableFields(boolean enable) {

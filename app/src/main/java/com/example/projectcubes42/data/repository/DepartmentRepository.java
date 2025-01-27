@@ -38,4 +38,6 @@ public class DepartmentRepository {
     public Call<Department> addDepartment(Department department) {
         return apiService.addDepartment(department);
     }
+
+
 }

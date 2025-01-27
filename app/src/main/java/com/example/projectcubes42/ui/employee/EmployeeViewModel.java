@@ -2,7 +2,6 @@ package com.example.projectcubes42.ui.employee;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.example.projectcubes42.data.model.Department;
@@ -13,12 +12,19 @@ import com.example.projectcubes42.data.repository.EmployeeRepository;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class EmployeeViewModel extends ViewModel {
 
     private final EmployeeRepository repository;
-
+    public EmployeeViewModel() {
+        this.repository = new EmployeeRepository();
+    }
     // LiveData principal qui contient la liste complète des employés
     private LiveData<List<Employee>> employeesLiveData;
+    private LiveData<String> toastMessageLiveData = new MutableLiveData<>();
 
     // LiveData contenant la liste filtrée en fonction des critères
     private final MutableLiveData<List<Employee>> filteredEmployeesLiveData = new MutableLiveData<>(new ArrayList<>());
@@ -27,9 +33,7 @@ public class EmployeeViewModel extends ViewModel {
     private LiveData<List<Department>> departmentsLiveData;
     private LiveData<List<Site>> sitesLiveData;
 
-    public EmployeeViewModel() {
-        repository = new EmployeeRepository();
-    }
+
 
     // Méthode pour initialiser le flux LiveData des employés
     public void loadEmployees() {
@@ -52,7 +56,9 @@ public class EmployeeViewModel extends ViewModel {
     public LiveData<List<Employee>> getFilteredEmployees() {
         return filteredEmployeesLiveData;
     }
-
+    public LiveData<String> getToastMessageLiveData() {
+        return toastMessageLiveData;
+    }
     // Chargement des départements et sites depuis le repository
     public void loadDepartments() {
         departmentsLiveData = repository.getAllDepartments();
@@ -123,4 +129,16 @@ public class EmployeeViewModel extends ViewModel {
         }
         filteredEmployeesLiveData.setValue(newFilteredList);
     }
+
+    //méthode pour chercher un employé en fonction de son département
+    public Call<List<Employee>> fetchEmployeesByDepartment(Long departmentId) {
+        return repository.getEmployeesByDepartment(departmentId);
+    }
+
+    //méthode pour chercher un employé en fonction de son département
+    public Call<List<Employee>> fetchEmployeesBySite(Long siteId) {
+        return repository.getEmployeesBySite(siteId);
+    }
+
+
 }

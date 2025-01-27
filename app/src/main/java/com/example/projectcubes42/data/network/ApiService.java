@@ -1,5 +1,7 @@
 package com.example.projectcubes42.data.network;
 
+import android.util.Log;
+
 import com.example.projectcubes42.data.model.AuthResponse;
 import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.model.Department;
@@ -38,6 +40,14 @@ public interface ApiService {
 
     @GET("api/department/{id}")
     Call<Department> getDepartmentById(@Path("id") Long id);
+
+    //ajout de la méthode pour récupérer un employé depuis un département
+    @GET("api/department/{id}/employees")
+    Call<List<Employee>> getEmployeesByDepartment(@Path("id") Long departmentId);
+
+    //ajout de la méthode pour récupérer un employé depuis un site
+    @GET("api/site/{id}/employees")
+    Call<List<Employee>> getEmployeesBySite(@Path("id") Long departmentId);
 
     @POST("api/department")
     Call<Department> addDepartment(@Body Department department);

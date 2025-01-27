@@ -32,6 +32,9 @@ public class AddEmployeeViewModel extends ViewModel {
     public AddEmployeeViewModel() {
         repository = new EmployeeRepository();
     }
+    public AddEmployeeViewModel(EmployeeRepository repository) {
+        this.repository = repository;
+    }
 
     // -------------------------
     //  GETTERS
