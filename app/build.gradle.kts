@@ -69,4 +69,6 @@ dependencies {
 
     // (Optionnel) Le runner d'AndroidX, si tu en as besoin
     androidTestImplementation (libs.runner)
+
+    testImplementation (libs.mockwebserver)
 }

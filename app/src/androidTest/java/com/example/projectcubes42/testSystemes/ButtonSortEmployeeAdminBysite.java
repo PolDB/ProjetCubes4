@@ -1,4 +1,4 @@
-package com.example.projectcubes42.testUnitaires;
+package com.example.projectcubes42.testSystemes;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;

@@ -4,14 +4,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
-import com.example.projectcubes42.data.model.Department;
-import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.model.Site;
-import com.example.projectcubes42.data.repository.DepartmentRepository;
-import com.example.projectcubes42.data.repository.EmployeeRepository;
 import com.example.projectcubes42.data.repository.SiteRepository;
 
 import org.junit.Before;

@@ -1,4 +1,4 @@
-package com.example.projectcubes42.testUnitaires;
+package com.example.projectcubes42.testSystemes;
 
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;

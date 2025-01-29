@@ -4,13 +4,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.example.projectcubes42.data.model.Department;
-import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.repository.DepartmentRepository;
-import com.example.projectcubes42.data.repository.EmployeeRepository;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +37,7 @@ public class DepartmentCRUDTest {
 
     @Test
     public void testSaveDepartment_Success() {
-        Department department = new Department(1L, "Paris");
+        Department department = new Department(1L, "Direction");
         repository.addDepartment(department);
         verify(repository, times(1)).addDepartment(department);
     }
@@ -49,7 +45,7 @@ public class DepartmentCRUDTest {
     @Test
     public void testGetDepartmentById_Success() throws Exception {
         // Arrange
-        Department department = new Department(1L, "Paris");
+        Department department = new Department(1L, "Direction");
         // Création d'un Call<Employee> simulé
         Call<Department> mockCall = mock(Call.class);
         when(mockCall.execute()).thenReturn(Response.success(department)); // Simulation du succès
@@ -62,13 +58,13 @@ public class DepartmentCRUDTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals("Paris", result.getDepartment_name());
+        assertEquals("Direction", result.getDepartment_name());
 
     }
 
     @Test
     public void testUpdateDepartment_Success() {
-        Department department = new Department(1L, "Paris");
+        Department department = new Department(1L, "Direction");
         repository.updateDepartment(1L, department);
         verify(repository, times(1)).updateDepartment(1l, department);
     }

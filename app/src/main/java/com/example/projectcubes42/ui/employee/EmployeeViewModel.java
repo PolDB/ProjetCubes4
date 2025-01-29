@@ -35,6 +35,7 @@ public class EmployeeViewModel extends ViewModel {
 
 
 
+
     // Méthode pour initialiser le flux LiveData des employés
     public void loadEmployees() {
         this.employeesLiveData = repository.getAllEmployees();
