@@ -21,7 +21,8 @@ public class AddSiteViewModel extends ViewModel {
     // LiveData pour signaler la fermeture de l'écran
     private final MutableLiveData<Boolean> closeScreenEvent = new MutableLiveData<>();
 
-    public AddSiteViewModel() {
+    public AddSiteViewModel(){repository = new SiteRepository();}
+    public AddSiteViewModel(SiteRepository mockRepository) {
         repository = new SiteRepository();
     }
 

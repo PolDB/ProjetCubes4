@@ -33,6 +33,9 @@ public class SiteDetailViewModel extends ViewModel {
     private final MutableLiveData<List<Employee>> employeesLiveData = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<List<Employee>> filteredEmployeesLiveData = new MutableLiveData<>(new ArrayList<>());
 
+    public SiteDetailViewModel(SiteRepository mockRepository) {
+        this.repository = new SiteRepository();
+    }
     public SiteDetailViewModel() {
         this.repository = new SiteRepository();
     }

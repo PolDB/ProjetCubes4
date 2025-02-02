@@ -34,7 +34,6 @@ public class DepartmentDetailViewModel extends ViewModel {
     // LiveData pour signaler la fermeture de l'écran
     private final MutableLiveData<Boolean> closeScreenEvent = new MutableLiveData<>();
     private final MutableLiveData<List<Employee>> employeesLiveData = new MutableLiveData<>(new ArrayList<>());
-
     // LiveData pour stocker la liste filtrée des employés
     private final MutableLiveData<List<Employee>> filteredEmployeesLiveData = new MutableLiveData<>(new ArrayList<>());
     public DepartmentDetailViewModel() {
@@ -118,7 +117,7 @@ public class DepartmentDetailViewModel extends ViewModel {
     }
 
     public void deleteDepartment(Long departmentId) {
-        Log.d("DEBUG", "deleteDepartment id: " + departmentId);
+
         repository.deleteDepartment(departmentId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

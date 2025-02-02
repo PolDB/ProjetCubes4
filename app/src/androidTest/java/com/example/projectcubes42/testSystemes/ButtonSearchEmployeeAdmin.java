@@ -27,19 +27,26 @@ public class ButtonSearchEmployeeAdmin {
     @Test
     public void testSearchButtonDisplaysAlertDialog() {
         // Cliquer sur le bouton de recherche
-        onView(withId(R.id.imageViewVisitor))
-                .perform(click());
-        //Saisie du user Admin
+        for (int i = 0; i < 5; i++) {
+            onView(withId(R.id.imageViewVisitor)).perform(click());
+        }
+
+        // Saisie du user Admin
         onView(withId(R.id.username))
-                .perform(typeText("Paul"));
-        //Saisie du password Admin
-        onView(withId(R.id.password)).perform(typeText("1234") ,closeSoftKeyboard());
-        //Cliquer sur le bouton de connexino
-        onView(ViewMatchers.withId(R.id.login))
-                .perform(click());
+                .perform(typeText("Paul"), closeSoftKeyboard());
+
+        // Saisie du password Admin et fermeture du clavier
+        onView(withId(R.id.password))
+                .perform(typeText("1234"), closeSoftKeyboard());
+
+        // Cliquer sur le bouton de connexion
+        onView(withId(R.id.login)).perform(click());
         //Cliquer sur le bouton recherche salarié
         onView(ViewMatchers.withId(R.id.button_search_employee))
                 .perform(click());
+
+        onView(withId(R.id.edit_search))
+                .perform(typeText("dau"), closeSoftKeyboard());
 
         // Vérifier que l'AlertDialog est affichée avec un titre spécifique
         onView(withText("Rechercher un employé"))

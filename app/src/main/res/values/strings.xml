@@ -51,4 +51,6 @@
     <string name="deconnexion">Deconnexion</string>
     <string name="image_profile">image profile</string>
     <string name="sauvegarder">Sauvegarder</string>
+    <string name="drawer_open">Drawer layoute open\n</string>
+    <string name="drawer_close">Drawer layout close\n</string>
 </resources>

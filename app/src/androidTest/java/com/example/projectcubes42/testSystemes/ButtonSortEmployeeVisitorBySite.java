@@ -37,9 +37,9 @@ public class ButtonSortEmployeeVisitorBySite {
                 .check(matches(withText("Filtrer par site")));
 
         // Optionnel : Vérifier la présence d'un bouton spécifique dans l'AlertDialog et cliquer dessus
-        onView(withText("Marseille"))
+        onView(withText("Toulouse"))
                 .inRoot(isDialog())
-                .check(matches(withText("Marseille")))
+                .check(matches(withText("Toulouse")))
                 .perform(click());
     }
 }

@@ -26,16 +26,22 @@ public class ButtonSortEmployeeAdminBysite {
     @Test
     public void testSearchButtonDisplaysAlertDialog() {
         // Cliquer sur le bouton de recherche
-        onView(withId(R.id.imageViewVisitor))
-                .perform(click());
-        //Saisie du user Admin
+        for (int i = 0; i < 5; i++) {
+            onView(withId(R.id.imageViewVisitor)).perform(click());
+        }
+
+        // Saisie du user Admin
         onView(withId(R.id.username))
-                .perform(typeText("Paul"));
-        //Saisie du password Admin
-        onView(withId(R.id.password)).perform(typeText("1234") ,closeSoftKeyboard());
-        //Cliquer sur le bouton de connexino
-        onView(ViewMatchers.withId(R.id.login))
+                .perform(typeText("Paul"), closeSoftKeyboard());
+
+        // Saisie du password Admin et fermeture du clavier
+        onView(withId(R.id.password))
+                .perform(typeText("1234"), closeSoftKeyboard());
+
+        // Cliquer sur le bouton de connexion
+        onView(withId(R.id.login))
                 .perform(click());
+
 
         onView(ViewMatchers.withId(R.id.button_sort_site))
                 .perform(click());
@@ -46,8 +52,8 @@ public class ButtonSortEmployeeAdminBysite {
                 .check(matches(withText("Filtrer par site")));
 
         // Optionnel : Vérifier la présence d'un bouton spécifique dans l'AlertDialog et cliquer dessus
-        onView(withText("Marseille"))
+        onView(withText("Toulouse"))
                 .inRoot(isDialog())
-                .check(matches(withText("Marseille")))
+                .check(matches(withText("Toulouse")))
                 .perform(click());
 }}

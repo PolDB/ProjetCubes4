@@ -3,6 +3,8 @@ package com.example.projectcubes42.testSystemes;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.ActivityTestRule;
+import androidx.test.espresso.contrib.RecyclerViewActions;
+
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +31,8 @@ public class ButtonEmployeeDetailVisitor {
     @Test
     public void ButtonEmployeeDetailVisitor() {
         // Cliquer sur le bouton de recherche
-        onView(withId(R.id.contactRecyclerView));
+        onView(withId(R.id.contactRecyclerView))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
 
 

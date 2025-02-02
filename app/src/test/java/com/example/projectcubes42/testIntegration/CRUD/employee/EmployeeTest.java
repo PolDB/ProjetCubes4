@@ -1,7 +1,6 @@
-package com.example.projectcubes42.testIntegration.employee;
+package com.example.projectcubes42.testIntegration.CRUD.employee;
 
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.LiveData;
@@ -10,8 +9,6 @@ import androidx.lifecycle.Observer;
 
 import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.repository.EmployeeRepository;
-import com.example.projectcubes42.ui.employee.AddEmployeeViewModel;
-import com.example.projectcubes42.ui.employee.EmployeeDetailViewModel;
 import com.example.projectcubes42.ui.employee.EmployeeViewModel;
 
 import org.junit.Before;
@@ -24,12 +21,10 @@ import org.mockito.MockitoAnnotations;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 public class EmployeeTest {
 

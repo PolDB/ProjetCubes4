@@ -71,4 +71,5 @@ dependencies {
     androidTestImplementation (libs.runner)
 
     testImplementation (libs.mockwebserver)
+    androidTestImplementation (libs.espresso.contrib)
 }

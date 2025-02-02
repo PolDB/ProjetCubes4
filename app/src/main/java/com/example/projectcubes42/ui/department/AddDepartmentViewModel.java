@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.projectcubes42.data.model.Department;
 import com.example.projectcubes42.data.repository.DepartmentRepository;
+import com.example.projectcubes42.ui.employee.AddEmployeeViewModel;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,8 +22,9 @@ public class AddDepartmentViewModel extends ViewModel {
     // LiveData pour fermer l'écran après succès
     private final MutableLiveData<Boolean> closeScreenEvent = new MutableLiveData<>();
 
-    public AddDepartmentViewModel() {
-        repository = new DepartmentRepository();
+    public AddDepartmentViewModel(){repository = new DepartmentRepository();}
+    public AddDepartmentViewModel(DepartmentRepository repository) {
+        this.repository = repository;
     }
 
     public LiveData<String> getToastMessageLiveData() {

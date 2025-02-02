@@ -1,4 +1,4 @@
-package com.example.projectcubes42.testUnitaires;
+package com.example.projectcubes42.testUnitairesCRUD;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

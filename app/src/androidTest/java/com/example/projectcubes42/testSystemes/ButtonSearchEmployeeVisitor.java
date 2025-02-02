@@ -9,6 +9,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -31,6 +33,8 @@ public class ButtonSearchEmployeeVisitor {
         onView(ViewMatchers.withId(R.id.button_search_employee_visitor))
                 .perform(click());
 
+        onView(withId(R.id.edit_search))
+                .perform(typeText("dau"), closeSoftKeyboard());
         // Vérifier que l'AlertDialog est affichée avec un titre spécifique
         onView(withText("Rechercher un employé"))
                 .inRoot(isDialog())
