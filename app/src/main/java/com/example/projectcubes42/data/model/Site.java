@@ -1,5 +1,5 @@
 package com.example.projectcubes42.data.model;
-
+//classe pour un site
 public class Site {
     private Long idSite;
     private String city;

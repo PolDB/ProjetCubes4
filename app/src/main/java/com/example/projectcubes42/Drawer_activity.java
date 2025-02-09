@@ -20,13 +20,13 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.projectcubes42.ui.employee.FragmentEmployee;
 import com.example.projectcubes42.ui.employee.FragmentEmployeeVisitor;
 import com.google.android.material.navigation.NavigationView;
-
+//c'est la page admin, dans lequel on retrouve le drawerLayout, et les différents fragment (employee, department, site) qui y sont intégrés.
 public class Drawer_activity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private ImageView drawerImage;
+
 
 
     @Override

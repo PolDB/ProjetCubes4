@@ -1,5 +1,5 @@
 package com.example.projectcubes42.ui.department;
-
+//viewModel rattaché à la classe departmentDetail
 import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;

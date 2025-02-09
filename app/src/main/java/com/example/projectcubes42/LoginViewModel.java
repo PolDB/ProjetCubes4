@@ -1,4 +1,4 @@
-package com.example.projectcubes42.ui.login;
+package com.example.projectcubes42;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,7 +11,7 @@ import com.example.projectcubes42.data.repository.AuthRepository;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+//viewModel qui est rattaché à l'activité LoginActivity
 public class LoginViewModel extends ViewModel {
 
     private final AuthRepository repository;

@@ -15,7 +15,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+//viewModel rattaché au fragment FragmentEmployee
 public class EmployeeViewModel extends ViewModel {
 
     private final EmployeeRepository repository;

@@ -23,7 +23,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+//classe qui définit l'interface détaillé d'un service
 public class DepartmentDetail extends AppCompatActivity {
 
     private EditText departmentDetail;

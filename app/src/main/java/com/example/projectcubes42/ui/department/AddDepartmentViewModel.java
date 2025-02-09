@@ -1,5 +1,5 @@
 package com.example.projectcubes42.ui.department;
-
+//viewModel rataché à l'activité AddDepartment
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;

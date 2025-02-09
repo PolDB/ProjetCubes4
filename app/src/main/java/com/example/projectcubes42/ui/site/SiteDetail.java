@@ -24,7 +24,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+//il s'agit de l'activité qui affiche les site dans l'interface admin
 public class SiteDetail extends AppCompatActivity {
 
     private TextView siteDetail;

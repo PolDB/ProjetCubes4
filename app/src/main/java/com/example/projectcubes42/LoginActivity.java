@@ -13,8 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.projectcubes42.data.model.AuthResponse;
-import com.example.projectcubes42.ui.login.LoginViewModel;
-
+import com.example.projectcubes42.LoginViewModel;
+//l'activté de pour la page de connexion
 public class LoginActivity extends AppCompatActivity {
 
     private EditText etUsername, etPassword;

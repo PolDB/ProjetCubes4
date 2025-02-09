@@ -21,7 +21,7 @@ import com.example.projectcubes42.data.model.Employee;
 import com.example.projectcubes42.data.model.Site;
 
 import java.util.List;
-
+//il s'agit de l'activité qui affiche les détail d'un utilisateur dans l'interface admin
 public class EmployeeDetail extends AppCompatActivity {
 
     private TextView nameDetail, firstnameDetail, phoneDetail, emailDetail;

@@ -5,32 +5,13 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/nav_employee">
 
-    <fragment
-        android:id="@+id/nav_homeview"
-        android:name="com.example.projectcubes42.ui.homeview.FragmentHomeview"
-        android:label="@string/menu_homeview"
-        tools:layout="@layout/fragment_homeview" />
+
 
     <fragment
         android:id="@+id/nav_add_employee"
         android:name="com.example.projectcubes42.ui.employee.FragmentEmployee"
         android:label="@string/menu_add_employee"
         tools:layout="@layout/fragment_add_employee"/>
-    <action
-        android:id="@+id/action_add_site_to_home"
-        app:destination="@+id/nav_homeview"/>
-
-    <fragment
-        android:id="@+id/nav_add_service"
-        android:name="com.example.projectcubes42.ui.addService.FragmentAddService"
-        android:label="@string/menu_add_service"
-        tools:layout="@layout/fragment_add_service" />
-
-    <fragment
-        android:id="@+id/nav_add_site"
-        android:name="com.example.projectcubes42.ui.addSite.FragmentAddSite"
-        android:label="@string/menu_add_site"
-        tools:layout="@layout/fragment_add_site" />
 
     <fragment
         android:id="@+id/nav_employee"

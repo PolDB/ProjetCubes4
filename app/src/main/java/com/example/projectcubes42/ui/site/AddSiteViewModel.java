@@ -10,7 +10,7 @@ import com.example.projectcubes42.data.repository.SiteRepository;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+//viewModel rattaché à l'activité AddSite
 public class AddSiteViewModel extends ViewModel {
 
     private final SiteRepository repository;

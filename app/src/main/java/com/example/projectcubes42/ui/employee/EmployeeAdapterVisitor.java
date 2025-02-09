@@ -23,6 +23,7 @@ import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Employee;
 
 import java.util.List;
+//il s'agit de la classe, qui représente les données qui sont envoyées et affichées dans le recyclerView pour la page visiteur
 
 public class EmployeeAdapterVisitor extends RecyclerView.Adapter<EmployeeAdapterVisitor.EmployeeViewHolder> {
 
@@ -50,7 +51,7 @@ public class EmployeeAdapterVisitor extends RecyclerView.Adapter<EmployeeAdapter
         Log.d("ADAPTER_BIND", "Nom : " + employee.getName() + ", Département : " + employee.idDepartment());
         // Validation des données avant l'affichage
         if (employee.getId() != null && employee.getName() != null && employee.getFirstname() != null) {
-            holder.nameTextView.setText(employee.getId() + " " + employee.getName() + " " + employee.getFirstname() + "" + employee.idDepartment());
+            holder.nameTextView.setText(employee.getName() + " " + employee.getFirstname());
         } else {
             holder.nameTextView.setText("Données manquantes");
         }

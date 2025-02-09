@@ -17,7 +17,7 @@ import com.example.projectcubes42.data.model.Site;
 import com.example.projectcubes42.ui.department.DepartmentDetail;
 
 import java.util.List;
-
+//il s'agit de la classe, qui représente les données qui sont envoyées et affichées dans le recyclerView
 public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder> {
 
     private List<Site> siteList;
@@ -38,7 +38,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteViewHolder
     @Override
     public void onBindViewHolder(@NonNull SiteViewHolder holder, int position) {
         Site site = siteList.get(position);
-        holder.nameTextView.setText(site.getIdSite() + " " + site.getCity()) ;
+        holder.nameTextView.setText(site.getCity()) ;
         holder.nameTextView.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), SiteDetail.class);
             Log.d("CURRENT_ACTIVITY", "ID envoyé : " + site.getIdSite());

@@ -1,5 +1,5 @@
 package com.example.projectcubes42.data.model;
-
+// classe pour un service
 public class Department {
     private Long idDepartment;
     private String department_name;

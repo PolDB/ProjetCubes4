@@ -14,7 +14,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+//viewModel rataché à l'activité AddEmployee
 public class AddEmployeeViewModel extends ViewModel {
 
     private final EmployeeRepository repository;

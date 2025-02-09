@@ -1,5 +1,5 @@
 package com.example.projectcubes42.data.model;
-
+//classe pour un employé
 public class Employee {
 
 

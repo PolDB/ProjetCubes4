@@ -27,7 +27,7 @@ import com.example.projectcubes42.data.model.Site;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//Fragment qui affiche les employés du recyclerView pour l'interface utilisateur
 public class FragmentEmployeeVisitor extends Fragment {
 
     private RecyclerView recyclerView;

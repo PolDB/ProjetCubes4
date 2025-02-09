@@ -14,7 +14,7 @@ import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Department;
 
 import java.util.List;
-
+//il s'agit de la classe, qui représente les données qui sont envoyées et affichées dans le recyclerView
 public class DepartmentAdapter extends RecyclerView.Adapter<DepartmentAdapter.ServiceViewHolder> {
 
     private List<Department> departmentList;

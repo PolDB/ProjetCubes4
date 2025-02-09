@@ -4,11 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-    </androidx.fragment.app.FragmentContainerView>
+
 
     <!-- RecyclerView -->
     <androidx.appcompat.widget.Toolbar
@@ -44,10 +40,10 @@
         app:layout_constraintEnd_toEndOf="@+id/toolbar"
         app:layout_constraintHorizontal_bias="0.044"
         app:layout_constraintStart_toStartOf="@+id/toolbar"
-        app:layout_constraintTop_toTopOf="@+id/fragment_container"
+        app:layout_constraintTop_toTopOf="@+id/fragment_container1"
         app:layout_constraintVertical_bias="0.38"
         app:srcCompat="@mipmap/ic_launcher_round"
-        tools:ignore="HardcodedText"
+        tools:ignore="HardcodedText,UnknownIdInLayout"
         android:id="@+id/imageViewVisitor"/>
 
     <Button

@@ -1,5 +1,5 @@
 package com.example.projectcubes42.ui.department;
-
+//Fragment qui affiche les service du recyclerView
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;

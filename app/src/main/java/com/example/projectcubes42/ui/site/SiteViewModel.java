@@ -12,7 +12,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
+//viewModel rattaché au fragment FragmentSite
 public class SiteViewModel extends ViewModel {
 
     private final SiteRepository repository;

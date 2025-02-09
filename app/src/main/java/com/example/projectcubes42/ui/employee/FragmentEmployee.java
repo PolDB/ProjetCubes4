@@ -33,7 +33,7 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
+//Fragment qui affiche les employés du recyclerView pour l'interface admin
 public class FragmentEmployee extends Fragment {
 
     private RecyclerView recyclerView;
@@ -59,7 +59,6 @@ public class FragmentEmployee extends Fragment {
         openBottomSheetButton  = root.findViewById(R.id.button_sort_department);
         openAlertDialogSite    = root.findViewById(R.id.button_sort_site);
         searchButton           = root.findViewById(R.id.button_search_employee);
-        // imageView = root.findViewById(R.id.votreImageView); // Si vous en avez besoin
 
         // Configuration de la RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -79,8 +78,8 @@ public class FragmentEmployee extends Fragment {
         // Charger la liste des employés via le ViewModel
         employeeViewModel.loadEmployees();
 
-        // Vérifier le rôle utilisateur pour afficher / cacher les boutons (admin/visiteur)
-        checkUserRole();
+
+
 
         // Bouton pour ajouter un employé
         addEmployeeButton.setOnClickListener(v -> {
@@ -103,42 +102,12 @@ public class FragmentEmployee extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        employeeViewModel.loadEmployees();
         // Si vous souhaitez recharger la liste quand on revient sur le fragment, décommentez:
         // employeeViewModel.loadEmployees();
         // checkUserRole() si nécessaire
     }
 
-    // Méthode pour vérifier le rôle de l’utilisateur (admin ou visiteur) et gérer la visibilité
-    private void checkUserRole() {
-        SharedPreferences sharedPreferences = requireActivity()
-                .getSharedPreferences("UserSession", Context.MODE_PRIVATE);
-        String userRole = sharedPreferences.getString("user_role", "visitor");
-
-        Log.d("CHECK_USER_ROLE", "Rôle récupéré : " + userRole);
-
-        if (!userRole.equals("admin")) {
-            addEmployeeButton.setVisibility(View.GONE);
-            Log.d("CHECK_USER_ROLE", "Utilisateur non admin, bouton caché");
-        } else {
-            addEmployeeButton.setVisibility(View.VISIBLE);
-            openBottomSheetButton.setVisibility(View.VISIBLE);
-            openAlertDialogSite.setVisibility(View.VISIBLE);
-            Log.d("CHECK_USER_ROLE", "Utilisateur admin, boutons affichés");
-        }
-    }
-
-    // Récupération d’un éventuel retour d’Activity (ex: reconnaissance vocale)
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        // Exemple de gestion de la reconnaissance vocale
-        if (requestCode == 100 && resultCode == requireActivity().RESULT_OK && data != null) {
-            ArrayList<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            if (results.contains("admin access")) { // Phrase secrète
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-            }
-        }
-    }
 
     // -------------------------------------------------------------------
     //  Dialogue de filtre par département

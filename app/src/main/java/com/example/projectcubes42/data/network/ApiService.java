@@ -17,7 +17,9 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 import java.util.List;
-
+/*l'interface permet normalement de stocker des méthodes sans corps, ni arguments,
+pour les réutiliser dans d'autres classe qui vont implémenter l'interface,
+ */
 public interface ApiService {
 
     @GET("api/employees")

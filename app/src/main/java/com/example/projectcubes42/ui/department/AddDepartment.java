@@ -26,17 +26,17 @@ public class AddDepartment extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_add_service);
 
-        // 1. Instancier le ViewModel
+        // Instancier le ViewModel
         viewModel = new ViewModelProvider(this).get(AddDepartmentViewModel.class);
 
-        // 2. Initialiser les vues
+        // Initialiser les vues
         editTextService = findViewById(R.id.editTextDepartment);
         buttonSendFormService = findViewById(R.id.buttonSendFormDepartement);
 
-        // 3. Observer le ViewModel
+        // Observer le ViewModel
         observeViewModel();
 
-        // 4. Click Listener
+        //Click Listener
         buttonSendFormService.setOnClickListener(v -> sendServiceData());
     }
 
@@ -53,7 +53,6 @@ public class AddDepartment extends AppCompatActivity {
         // Fermer l'Activity quand l'événement est émis
         viewModel.getCloseScreenEvent().observe(this, shouldClose -> {
             if (Boolean.TRUE.equals(shouldClose)) {
-                // Vous pouvez vider les champs avant de terminer, ou le faire avant
                 clearFields();
                 finish();
             }
@@ -74,7 +73,7 @@ public class AddDepartment extends AppCompatActivity {
         viewModel.addDepartment(department);
 
         // Optionnel : si vous souhaitez vider les champs tout de suite
-        // clearFields();
+        clearFields();
     }
 
     private void clearFields() {

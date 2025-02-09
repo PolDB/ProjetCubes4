@@ -18,7 +18,7 @@ import com.example.projectcubes42.R;
 import com.example.projectcubes42.data.model.Site;
 
 import java.util.List;
-
+//Fragment qui affiche les sites du recyclerView
 public class FragmentSite extends Fragment {
 
     private RecyclerView recyclerView;
